@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="uz">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AdolatAI — Huquqiy Hujjatlar Tahlili</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (window.pdfjsLib) {
+        window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      }
+    });
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #f8fafc;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .animate-spin-slow {
+      animation: spin 3s linear infinite;
+    }
+
+    @keyframes spin {
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @media print {
+
+      /* Yashirish kerak bo'lgan elementlar */
+      .no-print,
+      header.no-print,
+      footer.no-print,
+      button,
+      .animate-pulse,
+      .animate-spin {
+        display: none !important;
+      }
+
+      /* Asosiy print sozlamalari */
+      body {
+        background: white !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        font-size: 12pt !important;
+      }
+
+      /* Sahifa sozlamalari */
+      @page {
+        size: A4;
+        margin: 20mm 15mm;
+      }
+
+      /* Kartalar uchun */
+      .print-card,
+      [class*="rounded-"] {
+        border: 1px solid #e2e8f0 !important;
+        box-shadow: none !important;
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+
+      /* Rang qoldirish */
+      .bg-blue-600,
+      .bg-indigo-600,
+      .bg-rose-600,
+      .bg-emerald-600 {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      /* Grid layout uchun */
+      .grid {
+        display: block !important;
+      }
+
+      .lg\\:col-span-3,
+      .lg\\:col-span-6 {
+        width: 100% !important;
+        margin-bottom: 20px !important;
+      }
+
+      /* Matn o'lchamlari */
+      h1,
+      h2,
+      h3,
+      h4 {
+        page-break-after: avoid;
+      }
+
+      p,
+      li {
+        orphans: 3;
+        widows: 3;
+      }
+
+      /* Print uchun header */
+      main::before {
+        content: "AdolatAI — Huquqiy Tahlil Hisoboti";
+        display: block;
+        text-align: center;
+        font-size: 18pt;
+        font-weight: bold;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #3b82f6;
+      }
+
+      /* Print uchun footer */
+      main::after {
+        content: "© 2026 AdolatAI. Ushbu hujjat avtomatik tizim tomonidan tayyorlangan.";
+        display: block;
+        text-align: center;
+        font-size: 9pt;
+        color: #64748b;
+        margin-top: 30px;
+        padding-top: 10px;
+        border-top: 1px solid #e2e8f0;
+      }
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
+</html>

@@ -1,0 +1,84 @@
+// Prisma 5 Schema - Stable
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// =====================
+// AdolatAI Models
+// =====================
+
+model Analysis {
+  id            String   @id @default(uuid())
+  documentType  String
+  documentText  String
+  mode          String
+  
+  summary       String
+  overallRisk   String
+  riskScore     Int
+  
+  issues        Json
+  recommendations Json
+  topRisks      Json?
+  legalCompliance Json?
+  
+  detailedConclusion String?
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  userId        String?
+  ipAddress     String?
+}
+
+model Template {
+  id            String   @id @default(uuid())
+  documentType  String
+  header        String
+  title         String
+  body          String
+  footer        String
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model AuditLog {
+  id            String   @id @default(uuid())
+  action        String
+  entityId      String?
+  userId        String?
+  ipAddress     String?
+  metadata      Json?
+  
+  createdAt     DateTime @default(now())
+}
+
+// Admin users for panel access
+model Admin {
+  id            String   @id @default(uuid())
+  login         String   @unique
+  password      String   // bcrypt hashed
+  name          String   @default("Admin User")
+  role          String   @default("SUPER_ADMIN")
+  isActive      Boolean  @default(true)
+  lastLoginAt   DateTime?
+  lastLoginIp   String?
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model SystemSettings {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  value     String   
+  updatedAt DateTime @updatedAt
+}
