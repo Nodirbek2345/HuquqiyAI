@@ -132,6 +132,39 @@ export class AdminController {
         };
     }
 
+    // ==========================================
+    // PLATFORM USER MANAGEMENT
+    // ==========================================
+
+    @Get('platform-users')
+    @UseGuards(JwtAuthGuard)
+    async getPlatformUsers() {
+        const users = await this.adminService.getPlatformUsers();
+        return {
+            success: true,
+            users,
+        };
+    }
+
+    @Put('platform-users/:id/status')
+    @UseGuards(JwtAuthGuard)
+    async updatePlatformUserStatus(@Param('id') id: string, @Body() body: any) {
+        const user = await this.adminService.updatePlatformUserStatus(id, body.status);
+        return {
+            success: true,
+            user,
+        };
+    }
+
+    @Delete('platform-users/:id')
+    @UseGuards(JwtAuthGuard)
+    async deletePlatformUser(@Param('id') id: string) {
+        await this.adminService.deletePlatformUser(id);
+        return {
+            success: true,
+        };
+    }
+
     @Post('logout')
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.OK)
