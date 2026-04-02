@@ -83,7 +83,9 @@ export const STORAGE_KEYS = {
     HISTORY: 'adolat_history',
     USER: 'adolat_user',
     SETTINGS: 'adolat_settings',
-    THEME: 'adolat_theme'
+    THEME: 'adolat_theme',
+    PLATFORM_USER: 'adolat_platform_user',
+    PLATFORM_USERS_DB: 'adolat_platform_users_db'
 } as const;
 
 // ====================

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { User, Shield, MoreVertical, Plus, Loader2, Save, X, Eye, EyeOff } from 'lucide-react';
-import { getUsers, createUser, deleteUser, updateUser } from '../../services/adminApi';
+import { User, Shield, MoreVertical, Plus, Loader2, Save, X, Eye, EyeOff, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { getUsers, createUser, deleteUser, updateUser, getPlatformUsersList, updatePlatformUserStatusApi, deletePlatformUserApi } from '../../services/adminApi';
 import { TableRowActions } from '../components/shared/TableRowActions';
+import { type PlatformUser } from '../../components/shared/UserRegistrationModal';
 
 interface AdminUser {
     id: string;
@@ -19,10 +20,18 @@ export const UsersManager: React.FC = () => {
     const [newUser, setNewUser] = useState({ name: '', email: '', role: 'ADMIN', password: '' });
     const [saving, setSaving] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [platformUsers, setPlatformUsers] = useState<PlatformUser[]>([]);
+    const [activeTab, setActiveTab] = useState<'admin' | 'platform'>('platform');
 
     useEffect(() => {
         fetchUsers();
+        loadPlatformUsers();
     }, []);
+
+    const loadPlatformUsers = async () => {
+        const list = await getPlatformUsersList();
+        setPlatformUsers(list);
+    };
 
     const fetchUsers = async () => {
         try {
@@ -91,69 +100,195 @@ export const UsersManager: React.FC = () => {
                 </button>
             </div>
 
-            <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-                <table className="w-full text-sm text-left">
-                    <thead className="bg-slate-50 text-slate-500 font-bold text-xs uppercase border-b border-slate-100">
-                        <tr>
-                            <th className="px-6 py-4">F.I.SH</th>
-                            <th className="px-6 py-4">Email (Login)</th>
-                            <th className="px-6 py-4">Rol</th>
-                            <th className="px-6 py-4">Status</th>
-                            <th className="px-6 py-4">Oxirgi Kirish</th>
-                            <th className="px-6 py-4 text-right">Amallar</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100">
-                        {loading ? (
-                            <tr><td colSpan={6} className="text-center py-10"><Loader2 className="w-8 h-8 animate-spin mx-auto text-blue-500" /></td></tr>
-                        ) : users.length === 0 ? (
-                            <tr><td colSpan={6} className="text-center py-10 text-slate-500">Foydalanuvchilar topilmadi</td></tr>
-                        ) : (
-                            users.map((user) => (
-                                <tr key={user.id} className="hover:bg-slate-50/50 transition-colors">
-                                    <td className="px-6 py-4 flex items-center gap-3 font-medium text-slate-800">
-                                        <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500">
-                                            <User className="w-4 h-4" />
-                                        </div>
-                                        {user.name}
-                                    </td>
-                                    <td className="px-6 py-4 text-slate-600 font-mono text-xs">{user.login}</td>
-                                    <td className="px-6 py-4">
-                                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold border ${['SUPER_ADMIN', 'ADMIN'].includes(user.role) ? 'bg-indigo-50 text-indigo-700 border-indigo-200' :
-                                            'bg-slate-50 text-slate-600 border-slate-200'
-                                            }`}>
-                                            {['SUPER_ADMIN', 'ADMIN'].includes(user.role) && <Shield className="w-3 h-3" />}
-                                            {user.role}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <button
-                                            onClick={() => handleToggleStatus(user)}
-                                            className="flex items-center hover:bg-slate-50 px-2 py-1 rounded-lg transition-colors"
-                                        >
-                                            <span className={`inline-block w-2 h-2 rounded-full mr-2 ${user.isActive ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-slate-300'}`}></span>
-                                            <span className="text-slate-600">{user.isActive ? 'Faol' : 'Nofaol'}</span>
-                                        </button>
-                                    </td>
-                                    <td className="px-6 py-4 text-slate-50">{formatDate(user.lastLoginAt)}</td>
-                                    <td className="px-6 py-4 text-right">
-                                        <TableRowActions
-                                            onEdit={() => {
-                                                setNewUser({ name: user.name, email: user.login, role: user.role, password: '' });
-                                                setIsModalOpen(true);
-                                            }}
-                                            onDelete={() => handleDeleteUser(user.id)}
-                                            extraActions={[
-                                                { label: user.isActive ? 'Bloklash' : 'Faollashtirish', icon: Shield, onClick: () => handleToggleStatus(user), variant: user.isActive ? 'danger' : 'success' }
-                                            ]}
-                                        />
-                                    </td>
-                                </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
+            {/* Tab Navigation */}
+            <div className="flex gap-1 bg-slate-100 p-1 rounded-lg w-fit">
+                <button
+                    onClick={() => setActiveTab('platform')}
+                    className={`px-4 py-2 text-sm font-bold rounded-md transition-all ${activeTab === 'platform' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
+                        }`}
+                >
+                    Platforma Foydalanuvchilari
+                    {platformUsers.filter(u => u.status === 'pending').length > 0 && (
+                        <span className="ml-2 inline-flex items-center justify-center w-5 h-5 text-[10px] font-black bg-amber-500 text-white rounded-full">
+                            {platformUsers.filter(u => u.status === 'pending').length}
+                        </span>
+                    )}
+                </button>
+                <button
+                    onClick={() => setActiveTab('admin')}
+                    className={`px-4 py-2 text-sm font-bold rounded-md transition-all ${activeTab === 'admin' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
+                        }`}
+                >
+                    Admin Xodimlar
+                </button>
             </div>
+
+            {/* Platform Users Tab */}
+            {activeTab === 'platform' && (
+                <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                    <table className="w-full text-sm text-left">
+                        <thead className="bg-slate-50 text-slate-500 font-bold text-xs uppercase border-b border-slate-100">
+                            <tr>
+                                <th className="px-6 py-4">F.I.SH</th>
+                                <th className="px-6 py-4">Email</th>
+                                <th className="px-6 py-4">Telefon</th>
+                                <th className="px-6 py-4">Kasb</th>
+                                <th className="px-6 py-4">Status</th>
+                                <th className="px-6 py-4">Sana</th>
+                                <th className="px-6 py-4 text-right">Amallar</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100">
+                            {platformUsers.length === 0 ? (
+                                <tr><td colSpan={7} className="text-center py-10 text-slate-500">Hali hech kim ro'yxatdan o'tmagan</td></tr>
+                            ) : (
+                                platformUsers.map((pu) => (
+                                    <tr key={pu.id} className="hover:bg-slate-50/50 transition-colors">
+                                        <td className="px-6 py-4 flex items-center gap-3 font-medium text-slate-800">
+                                            <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
+                                                <User className="w-4 h-4" />
+                                            </div>
+                                            {pu.fullName}
+                                        </td>
+                                        <td className="px-6 py-4 text-slate-600 text-xs">{pu.email}</td>
+                                        <td className="px-6 py-4 text-slate-600 text-xs">{pu.phone}</td>
+                                        <td className="px-6 py-4">
+                                            <span className="px-2.5 py-1 rounded-md text-xs font-bold bg-slate-100 text-slate-600 capitalize">
+                                                {pu.profession}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            {pu.status === 'pending' && (
+                                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                                                    <Clock className="w-3 h-3" /> Kutilmoqda
+                                                </span>
+                                            )}
+                                            {pu.status === 'approved' && (
+                                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                                    <CheckCircle className="w-3 h-3" /> Tasdiqlangan
+                                                </span>
+                                            )}
+                                            {pu.status === 'rejected' && (
+                                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200">
+                                                    <XCircle className="w-3 h-3" /> Rad etilgan
+                                                </span>
+                                            )}
+                                        </td>
+                                        <td className="px-6 py-4 text-slate-500 text-xs">{formatDate(pu.registeredAt)}</td>
+                                        <td className="px-6 py-4 text-right">
+                                            <div className="flex items-center gap-2 justify-end">
+                                                {pu.status === 'pending' && (
+                                                    <>
+                                                        <button
+                                                            onClick={async () => { await updatePlatformUserStatusApi(pu.id, 'approved'); loadPlatformUsers(); }}
+                                                            className="px-3 py-1.5 bg-emerald-600 text-white text-xs font-bold rounded-md hover:bg-emerald-700 transition-colors flex items-center gap-1"
+                                                        >
+                                                            <CheckCircle className="w-3 h-3" /> Tasdiqlash
+                                                        </button>
+                                                        <button
+                                                            onClick={async () => { await updatePlatformUserStatusApi(pu.id, 'rejected'); loadPlatformUsers(); }}
+                                                            className="px-3 py-1.5 bg-rose-600 text-white text-xs font-bold rounded-md hover:bg-rose-700 transition-colors flex items-center gap-1"
+                                                        >
+                                                            <XCircle className="w-3 h-3" /> Rad etish
+                                                        </button>
+                                                    </>
+                                                )}
+                                                {pu.status !== 'pending' && (
+                                                    <button
+                                                        onClick={async () => { await updatePlatformUserStatusApi(pu.id, 'pending'); loadPlatformUsers(); }}
+                                                        className="px-3 py-1.5 bg-slate-200 text-slate-700 text-xs font-bold rounded-md hover:bg-slate-300 transition-colors"
+                                                    >
+                                                        Qayta ko'rish
+                                                    </button>
+                                                )}
+                                                <button
+                                                    onClick={async () => {
+                                                        if (window.confirm("Foydalanuvchini platformadan butunlay o'chirib tashlamoqchimisiz?")) {
+                                                            await deletePlatformUserApi(pu.id);
+                                                            loadPlatformUsers();
+                                                        }
+                                                    }}
+                                                    className="px-3 py-1.5 bg-rose-100 text-rose-600 border border-rose-200 text-xs font-bold rounded-md hover:bg-rose-200 transition-colors flex items-center gap-1"
+                                                >
+                                                    <XCircle className="w-3 h-3" /> O'chirish
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            )}
+
+            {/* Admin Users Tab */}
+            {activeTab === 'admin' && (
+
+                <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                    <table className="w-full text-sm text-left">
+                        <thead className="bg-slate-50 text-slate-500 font-bold text-xs uppercase border-b border-slate-100">
+                            <tr>
+                                <th className="px-6 py-4">F.I.SH</th>
+                                <th className="px-6 py-4">Email (Login)</th>
+                                <th className="px-6 py-4">Rol</th>
+                                <th className="px-6 py-4">Status</th>
+                                <th className="px-6 py-4">Oxirgi Kirish</th>
+                                <th className="px-6 py-4 text-right">Amallar</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100">
+                            {loading ? (
+                                <tr><td colSpan={6} className="text-center py-10"><Loader2 className="w-8 h-8 animate-spin mx-auto text-blue-500" /></td></tr>
+                            ) : users.length === 0 ? (
+                                <tr><td colSpan={6} className="text-center py-10 text-slate-500">Foydalanuvchilar topilmadi</td></tr>
+                            ) : (
+                                users.map((user) => (
+                                    <tr key={user.id} className="hover:bg-slate-50/50 transition-colors">
+                                        <td className="px-6 py-4 flex items-center gap-3 font-medium text-slate-800">
+                                            <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500">
+                                                <User className="w-4 h-4" />
+                                            </div>
+                                            {user.name}
+                                        </td>
+                                        <td className="px-6 py-4 text-slate-600 font-mono text-xs">{user.login}</td>
+                                        <td className="px-6 py-4">
+                                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold border ${['SUPER_ADMIN', 'ADMIN'].includes(user.role) ? 'bg-indigo-50 text-indigo-700 border-indigo-200' :
+                                                'bg-slate-50 text-slate-600 border-slate-200'
+                                                }`}>
+                                                {['SUPER_ADMIN', 'ADMIN'].includes(user.role) && <Shield className="w-3 h-3" />}
+                                                {user.role}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <button
+                                                onClick={() => handleToggleStatus(user)}
+                                                className="flex items-center hover:bg-slate-50 px-2 py-1 rounded-lg transition-colors"
+                                            >
+                                                <span className={`inline-block w-2 h-2 rounded-full mr-2 ${user.isActive ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-slate-300'}`}></span>
+                                                <span className="text-slate-600">{user.isActive ? 'Faol' : 'Nofaol'}</span>
+                                            </button>
+                                        </td>
+                                        <td className="px-6 py-4 text-slate-50">{formatDate(user.lastLoginAt)}</td>
+                                        <td className="px-6 py-4 text-right">
+                                            <TableRowActions
+                                                onEdit={() => {
+                                                    setNewUser({ name: user.name, email: user.login, role: user.role, password: '' });
+                                                    setIsModalOpen(true);
+                                                }}
+                                                onDelete={() => handleDeleteUser(user.id)}
+                                                extraActions={[
+                                                    { label: user.isActive ? 'Bloklash' : 'Faollashtirish', icon: Shield, onClick: () => handleToggleStatus(user), variant: user.isActive ? 'danger' : 'success' }
+                                                ]}
+                                            />
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            )}
 
             {/* Create User Modal */}
             {isModalOpen && (
@@ -216,6 +351,7 @@ export const UsersManager: React.FC = () => {
                                     <option value="SUPER_ADMIN">Super Admin</option>
                                     <option value="AUDITOR">Auditor</option>
                                     <option value="YURIST">Yurist</option>
+                                    <option value="NOTARIUS">Notarius</option>
                                 </select>
                             </div>
                         </div>

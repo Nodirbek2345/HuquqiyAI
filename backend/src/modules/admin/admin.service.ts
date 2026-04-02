@@ -6,6 +6,11 @@ import { LoginDto, AdminResponseDto, StatsResponseDto } from './admin.dto';
 
 @Injectable()
 export class AdminService implements OnModuleInit {
+    // Brute-force himoya: IP bo'yicha login urinishlarini kuzatish
+    private loginAttempts = new Map<string, { count: number; blockedUntil: number }>();
+    private readonly MAX_ATTEMPTS = 5;
+    private readonly BLOCK_DURATION = 15 * 60 * 1000; // 15 daqiqa
+
     constructor(
         private prisma: PrismaService,
         private jwtService: JwtService,
@@ -23,7 +28,7 @@ export class AdminService implements OnModuleInit {
     private async seedDefaultAdmin() {
         const existingAdmin = await this.prisma.admin.findFirst();
         if (!existingAdmin) {
-            const hashedPassword = await bcrypt.hash('admin123', 10);
+            const hashedPassword = await bcrypt.hash('Ad0lat$ecure2026!', 12);
             await this.prisma.admin.create({
                 data: {
                     login: 'admin',
@@ -32,23 +37,55 @@ export class AdminService implements OnModuleInit {
                     role: 'SUPER_ADMIN',
                 },
             });
-            console.log('✅ Default admin created: admin / admin123');
+            console.log('✅ Default admin created: admin / Ad0lat$ecure2026!');
         }
     }
 
+    private checkBruteForce(ipAddress: string): void {
+        const attempt = this.loginAttempts.get(ipAddress);
+        if (attempt && attempt.blockedUntil > Date.now()) {
+            const remainingMin = Math.ceil((attempt.blockedUntil - Date.now()) / 60000);
+            throw new UnauthorizedException(
+                `Juda ko'p noto'g'ri urinishlar. ${remainingMin} daqiqadan so'ng qayta urinib ko'ring.`
+            );
+        }
+    }
+
+    private recordFailedAttempt(ipAddress: string): void {
+        const attempt = this.loginAttempts.get(ipAddress) || { count: 0, blockedUntil: 0 };
+        attempt.count++;
+        if (attempt.count >= this.MAX_ATTEMPTS) {
+            attempt.blockedUntil = Date.now() + this.BLOCK_DURATION;
+            attempt.count = 0;
+        }
+        this.loginAttempts.set(ipAddress, attempt);
+    }
+
+    private clearAttempts(ipAddress: string): void {
+        this.loginAttempts.delete(ipAddress);
+    }
+
     async validateAdmin(loginDto: LoginDto, ipAddress?: string): Promise<{ token: string; admin: AdminResponseDto }> {
+        const clientIp = ipAddress || 'unknown';
+
+        // Brute-force tekshirish
+        this.checkBruteForce(clientIp);
+
         let admin;
+        let dbFailed = false;
         try {
             admin = await this.prisma.admin.findUnique({
                 where: { login: loginDto.login },
             });
         } catch (e) {
-            console.warn('⚠️ DB Connection Failed during Auth. Using Fallback logic.');
+            console.warn('⚠️ DB Connection Failed during Auth. Using fallback logic.');
+            dbFailed = true;
         }
 
-        // Fallback for Admin (If DB is down or empty)
-        if (!admin && loginDto.login === 'admin' && loginDto.password === 'admin123') {
-            console.log('✅ Using Fallback Admin Credentials');
+        // Baza ishlamayotgan paytda zaxira (fallback) orqali kirish
+        if ((!admin || dbFailed) && loginDto.login === 'admin' && (loginDto.password === 'admin123' || loginDto.password === 'Ad0lat$ecure2026!')) {
+            console.log('✅ Offline: Baza ulanmagani uchun Fallback paroldan foydalanildi');
+            this.clearAttempts(clientIp); // Reset brute-force on success
             const fallbackId = 'fallback-super-admin';
             const payload = { sub: fallbackId, login: 'admin', role: 'SUPER_ADMIN' };
             const token = this.jwtService.sign(payload);
@@ -57,7 +94,7 @@ export class AdminService implements OnModuleInit {
                 admin: {
                     id: fallbackId,
                     login: 'admin',
-                    name: 'Super Admin (Offline)',
+                    name: 'Super Admin (Offline Rejim)',
                     role: 'SUPER_ADMIN',
                     lastLoginAt: new Date(),
                 },
@@ -65,7 +102,7 @@ export class AdminService implements OnModuleInit {
         }
 
         if (!admin || !admin.isActive) {
-            // Log failed attempt
+            this.recordFailedAttempt(clientIp);
             await this.logAuditEvent('LOGIN_FAILED', null, loginDto.login, ipAddress, {
                 reason: 'Admin not found or inactive',
             });
@@ -75,12 +112,15 @@ export class AdminService implements OnModuleInit {
         const isPasswordValid = await bcrypt.compare(loginDto.password, admin.password);
 
         if (!isPasswordValid) {
-            // Log failed attempt
+            this.recordFailedAttempt(clientIp);
             await this.logAuditEvent('LOGIN_FAILED', admin.id, admin.login, ipAddress, {
                 reason: 'Invalid password',
             });
             throw new UnauthorizedException("Login yoki parol noto'g'ri");
         }
+
+        // Muvaffaqiyatli login — urinishlarni tozalash
+        this.clearAttempts(clientIp);
 
         // Update last login
         await this.prisma.admin.update({
@@ -108,6 +148,26 @@ export class AdminService implements OnModuleInit {
                 lastLoginAt: admin.lastLoginAt ?? undefined,
             },
         };
+    }
+
+    // Platform User Management
+    async getPlatformUsers() {
+        return this.prisma.platformUser.findMany({
+            orderBy: { registeredAt: 'desc' },
+        });
+    }
+
+    async updatePlatformUserStatus(id: string, status: string) {
+        return this.prisma.platformUser.update({
+            where: { id },
+            data: { status },
+        });
+    }
+
+    async deletePlatformUser(id: string) {
+        return this.prisma.platformUser.delete({
+            where: { id },
+        });
     }
 
     async getAdminById(id: string): Promise<AdminResponseDto | null> {

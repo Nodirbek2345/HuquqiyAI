@@ -9,12 +9,30 @@ import { TransformInterceptor } from './common/interceptors/transform.intercepto
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Security Headers
-  app.use(helmet());
+  // 🛡️ Security Headers (kengaytirilgan)
+  app.use(helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", "data:", "blob:"],
+        connectSrc: ["'self'", "https://api.groq.com", "https://api.openai.com", "https://generativelanguage.googleapis.com"],
+        fontSrc: ["'self'", "https://fonts.gstatic.com"],
+        objectSrc: ["'none'"],
+        frameSrc: ["'none'"],
+      },
+    },
+    crossOriginEmbedderPolicy: false,
+    hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
+    referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+    noSniff: true,
+    xssFilter: true,
+  }));
 
   const port = process.env.PORT || 5000;
 
-  // CORS - Frontend bilan integratsiya uchun
+  // CORS — Faqat ruxsat etilgan manbalar
   app.enableCors({
     origin: [
       'http://localhost:5173',
@@ -23,14 +41,19 @@ async function bootstrap() {
     ].filter(Boolean),
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    maxAge: 86400, // 24 soat preflight cache
   });
 
   // Global Error Handling
   app.useGlobalFilters(new HttpExceptionFilter());
 
-  // Validation
+  // 🛡️ Validation — nomalum va ortiqcha maydonlarni rad etish
   app.useGlobalPipes(new ValidationPipe({
     transform: true,
+    whitelist: true,
+    forbidNonWhitelisted: true,
+    disableErrorMessages: process.env.NODE_ENV === 'production',
   }));
 
   await app.listen(port);

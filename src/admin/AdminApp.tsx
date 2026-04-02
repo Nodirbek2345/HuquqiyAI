@@ -13,7 +13,11 @@ import { SecurityControl } from './pages/SecurityControl';
 import { validateToken, adminLogout, setAuthData } from '../services/adminApi';
 
 export const AdminApp: React.FC = () => {
-    const [activePage, setActivePage] = useState('dashboard');
+    const [activePage, _setActivePage] = useState(localStorage.getItem('admin_active_page') || 'dashboard');
+    const setActivePage = (page: string) => {
+        localStorage.setItem('admin_active_page', page);
+        _setActivePage(page);
+    };
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState(true);
 

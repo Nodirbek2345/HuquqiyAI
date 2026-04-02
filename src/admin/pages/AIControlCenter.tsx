@@ -2,6 +2,29 @@ import React, { useState, useEffect } from 'react';
 import { ToggleLeft, ToggleRight, RefreshCw, Save, ShieldAlert, Loader2, CheckCircle2, XCircle } from 'lucide-react';
 import { getSystemSettings, updateSystemSettings, type AppSettings } from '../../services/adminApi';
 
+const TempSlider = ({ value, onChange }: { value: number, onChange: (v: number) => void }) => {
+    const [local, setLocal] = useState(value);
+    useEffect(() => { setLocal(value); }, [value]);
+
+    return (
+        <div className="flex items-center gap-4 w-full">
+            <input
+                type="range"
+                min="0"
+                max="100"
+                value={local * 100}
+                onChange={(e) => setLocal(parseInt(e.target.value) / 100)}
+                onMouseUp={() => onChange(local)}
+                onTouchEnd={() => onChange(local)}
+                className="w-full h-2 flex-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+            />
+            <span className="font-mono text-sm font-bold bg-slate-100 px-2 py-1 rounded min-w-[3rem] text-center">
+                {local.toFixed(1)}
+            </span>
+        </div>
+    );
+};
+
 export const AIControlCenter: React.FC = () => {
     const [settings, setSettings] = useState<AppSettings>({
         geminiEnabled: true,
@@ -199,17 +222,10 @@ export const AIControlCenter: React.FC = () => {
                     <div className="p-6 space-y-6">
                         <div>
                             <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Temperature (Kreativlik)</label>
-                            <div className="flex items-center gap-4">
-                                <input
-                                    type="range"
-                                    min="0"
-                                    max="100"
-                                    value={settings.temperature * 100}
-                                    onChange={(e) => setSettings({ ...settings, temperature: parseInt(e.target.value) / 100 })}
-                                    className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
-                                />
-                                <span className="font-mono text-sm font-bold bg-slate-100 px-2 py-1 rounded">{settings.temperature.toFixed(1)}</span>
-                            </div>
+                            <TempSlider
+                                value={settings.temperature}
+                                onChange={(val) => setSettings({ ...settings, temperature: val })}
+                            />
                             <p className="text-xs text-slate-400 mt-1">Huquqiy tahlil uchun past qiymat (0.1) tavsiya etiladi.</p>
                         </div>
 
@@ -228,6 +244,7 @@ export const AIControlCenter: React.FC = () => {
 
                         <div className="pt-4 flex justify-end">
                             <button
+                                type="button"
                                 onClick={handleSave}
                                 disabled={saving}
                                 className="flex items-center gap-2 bg-blue-600 text-white px-6 py-2.5 rounded-lg font-bold text-sm hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/20 active:scale-95 transform duration-150 disabled:opacity-70 disabled:cursor-wait"

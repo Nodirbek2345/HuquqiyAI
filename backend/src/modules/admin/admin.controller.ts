@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Put, Body, Req, Query, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Get, Put, Delete, Param, Body, Req, Query, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { SettingsService } from './settings.service';
 import { LoginDto } from './admin.dto';

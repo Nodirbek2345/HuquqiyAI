@@ -127,58 +127,45 @@ export class AiOrchestratorService {
         const settings = this.settingsService.getSettings();
         let lastError: any = null;
 
-        // 1️⃣ Try Groq (Primary if enabled)
-        if (settings.groqEnabled !== false) {
+        // Barcha faol provayderlarni ruyhatga olish
+        const activeProviders = [];
+        if (settings.groqEnabled !== false) activeProviders.push('groq');
+        if (settings.geminiEnabled !== false) activeProviders.push('gemini');
+        if (settings.openaiEnabled !== false) activeProviders.push('openai');
+
+        // Ularni aralashtirish (Load Balancing - bir u, bir bu ishlashi uchun)
+        const shuffledProviders = activeProviders.sort(() => 0.5 - Math.random());
+
+        for (const provider of shuffledProviders) {
             try {
-                this.logger.log(`[Orchestrator] Attempting Groq for mode: ${mode}`);
-                const result = await analyzeWithGroq(text, systemPrompt);
+                this.logger.log(`[Orchestrator] Attempting ${provider} for mode: ${mode}`);
+
+                let result;
+                let reason;
+
+                if (provider === 'groq') {
+                    result = await analyzeWithGroq(text, systemPrompt);
+                    reason = "Groq Llama 3.3 (Load Balanced)";
+                } else if (provider === 'gemini') {
+                    result = await analyzeWithGemini(text, systemPrompt);
+                    reason = "Gemini Analysis (Load Balanced)";
+                } else if (provider === 'openai') {
+                    result = await analyzeWithOpenAI(text, systemPrompt);
+                    reason = "OpenAI Analysis (Load Balanced)";
+                }
+
                 return {
                     ...this.normalizeResult(result),
-                    analysis_mode: "groq",
-                    confidenceReason: "Groq Llama 3.3 (Primary)"
+                    analysis_mode: provider,
+                    confidenceReason: reason
                 };
             } catch (err: any) {
-                this.logger.warn(`Groq failed: ${err.message}`);
+                this.logger.warn(`${provider} failed: ${err.message}`);
                 lastError = err;
             }
         }
 
-        // 2️⃣ Gemini fallback (if enabled)
-        if (settings.geminiEnabled !== false) {
-            try {
-                this.logger.log(`[Orchestrator] Attempting Gemini for mode: ${mode}`);
-                const result = await analyzeWithGemini(text, systemPrompt);
-                return {
-                    ...this.normalizeResult(result),
-                    analysis_mode: "gemini",
-                    confidenceReason: "Gemini Analysis (Secondary)"
-                };
-            } catch (err: any) {
-                this.logger.warn(`Gemini failed: ${err.message}`);
-                lastError = err;
-            }
-        }
-
-        // 3️⃣ OpenAI fallback (if enabled)
-        if (settings.openaiEnabled !== false) {
-            try {
-                this.logger.log(`[Orchestrator] Attempting OpenAI for mode: ${mode}`);
-                const result = await analyzeWithOpenAI(text, systemPrompt);
-                return {
-                    ...this.normalizeResult(result),
-                    analysis_mode: "openai",
-                    confidenceReason: "OpenAI Analysis (Tertiary)"
-                };
-            } catch (err: any) {
-                this.logger.warn(`OpenAI failed: ${err.message}`);
-                lastError = err;
-            }
-        }
-
-        // 3️⃣ Local fallback (Removed per user request)
-        // If we reached here, both AI providers failed
-
-        throw new Error(`AI Tahlil Xatosi (Barcha provayderlar): ${lastError?.message || 'Noma\'lum xato'}`);
+        throw new Error(`AI Tahlil Xatosi (Barcha provayderlar ishlamadi): ${lastError?.message || 'Noma\'lum xato'}`);
     }
 
     private normalizeResult(data: any): AnalysisResult {
@@ -206,34 +193,27 @@ export class AiOrchestratorService {
             { role: "user", content: message }
         ];
 
-        // 1️⃣ Try Groq
-        if (settings.groqEnabled !== false) {
+        let lastError: any = null;
+
+        const activeProviders = [];
+        if (settings.groqEnabled !== false) activeProviders.push('groq');
+        if (settings.geminiEnabled !== false) activeProviders.push('gemini');
+        if (settings.openaiEnabled !== false) activeProviders.push('openai');
+
+        const shuffledProviders = activeProviders.sort(() => 0.5 - Math.random());
+
+        for (const provider of shuffledProviders) {
             try {
-                return await chatWithGroq(messages);
-            } catch (e) {
-                this.logger.warn("Groq Chat failed, switching fallback...");
+                if (provider === 'groq') return await chatWithGroq(messages);
+                if (provider === 'gemini') return await chatWithGemini(messages);
+                if (provider === 'openai') return await chatWithOpenAI(messages);
+            } catch (e: any) {
+                this.logger.warn(`[Chat] ${provider} failed: ${e.message}`);
+                lastError = e;
             }
         }
 
-        // 2️⃣ Try Gemini
-        if (settings.geminiEnabled !== false) {
-            try {
-                return await chatWithGemini(messages);
-            } catch (e) {
-                this.logger.warn("Gemini Chat failed...");
-            }
-        }
-
-        // 3️⃣ Try OpenAI
-        if (settings.openaiEnabled !== false) {
-            try {
-                return await chatWithOpenAI(messages);
-            } catch (e) {
-                this.logger.error("OpenAI Chat failed...");
-            }
-        }
-
-        throw new Error("AI xizmatlari vaqtincha ishlamayapti");
+        throw new Error(`AI xizmatlari vaqtincha ishlamayapti: ${lastError?.message || 'Noma\'lum'}`);
     }
 }
 

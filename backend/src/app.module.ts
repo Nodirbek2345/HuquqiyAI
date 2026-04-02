@@ -28,10 +28,10 @@ import { HealthController } from './health.controller';
       envFilePath: '.env',
     }),
 
-    // Rate Limiting (DDOS Protection)
+    // Rate Limiting (DDoS himoyasi — kuchaytirilgan)
     ThrottlerModule.forRoot([{
-      ttl: 60000, // 1 minute
-      limit: 60,  // 60 requests per minute
+      ttl: 60000, // 1 daqiqa
+      limit: 30,  // 30 so'rov / daqiqa (avval 60 edi)
     }]),
 
     // Core modules

@@ -17,6 +17,7 @@ import LegalDocs, { LegalDocType } from '../components/shared/LegalDocs';
 import FeatureInfoModal from '../components/shared/FeatureInfoModal';
 import { AdminAccessModal } from '../components/shared/AdminAccessModal';
 import ErrorBoundary from '../components/shared/ErrorBoundary';
+import { UserRegistrationModal, getPlatformUser } from '../components/shared/UserRegistrationModal';
 
 // Types va services
 import { AnalysisResult, AppStep, AnalysisMode } from '../types';
@@ -55,6 +56,10 @@ const App: React.FC = () => {
     const [showFeatureInfo, setShowFeatureInfo] = useState<boolean>(false);
     const [progress, setProgress] = useState(0);
     const [progressLabel, setProgressLabel] = useState('');
+    const [showRegistration, setShowRegistration] = useState(false);
+    const [pendingMode, setPendingMode] = useState<AnalysisMode | null>(null);
+    const [showPendingAlert, setShowPendingAlert] = useState(false);
+    const [showRejectedAlert, setShowRejectedAlert] = useState(false);
 
     // LocalStorage dan tarix yuklash
     useEffect(() => {
@@ -109,8 +114,30 @@ const App: React.FC = () => {
     }
 
     const startFlow = (mode: AnalysisMode) => {
+        // 1) Tekshirish: foydalanuvchi ro'yxatdan o'tganmi?
+        const user = getPlatformUser();
+        if (!user) {
+            setPendingMode(mode);
+            setShowRegistration(true);
+            return;
+        }
+        // 2) Tasdiqlangan mi?
+        if (user.status === 'rejected') {
+            setShowRejectedAlert(true);
+            return;
+        }
+        if (user.status === 'pending') {
+            setShowPendingAlert(true);
+            return;
+        }
+        // 3) Tasdiqlangan — davom etish
         setAnalysisMode(mode);
         setCurrentStep('disclaimer');
+    };
+
+    const handleRegistered = () => {
+        setShowRegistration(false);
+        setShowPendingAlert(true);
     };
 
     const openInfo = (mode: AnalysisMode) => {
@@ -188,6 +215,56 @@ const App: React.FC = () => {
                 {showFeatureInfo && (
                     <FeatureInfoModal mode={analysisMode} onCancel={() => setShowFeatureInfo(false)} />
                 )}
+
+                {/* Ro'yxatdan o'tish modali */}
+                <UserRegistrationModal
+                    isOpen={showRegistration}
+                    onClose={() => setShowRegistration(false)}
+                    onRegistered={handleRegistered}
+                />
+
+                {/* Kutilmoqda xabari */}
+                {showPendingAlert && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+                        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-8 text-center animate-in fade-in zoom-in duration-200">
+                            <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <svg className="w-8 h-8 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            </div>
+                            <h3 className="text-xl font-black text-slate-900 mb-2">Kutilmoqda</h3>
+                            <p className="text-slate-500 text-sm mb-6 leading-relaxed">
+                                Sizning so'rovingiz qabul qilindi. <strong>Admin tasdiqlashi</strong>ni kutib turing. Tasdiqlanganingizdan keyin platformadan foydalanishingiz mumkin.
+                            </p>
+                            <button
+                                onClick={() => setShowPendingAlert(false)}
+                                className="w-full bg-slate-900 text-white font-bold text-sm py-3 rounded-lg hover:bg-slate-800 transition-all"
+                            >
+                                Tushundim
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {/* Rad etilgan xabari */}
+                {showRejectedAlert && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+                        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-8 text-center animate-in fade-in zoom-in duration-200">
+                            <div className="w-16 h-16 bg-rose-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <svg className="w-8 h-8 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
+                            </div>
+                            <h3 className="text-xl font-black text-slate-900 mb-2">Ruxsat berilmagan</h3>
+                            <p className="text-slate-500 text-sm mb-6 leading-relaxed">
+                                Afsuski, admin sizning so'rovingizni <strong>rad etdi</strong>. Iltimos, admin bilan bog'laning.
+                            </p>
+                            <button
+                                onClick={() => setShowRejectedAlert(false)}
+                                className="w-full bg-slate-900 text-white font-bold text-sm py-3 rounded-lg hover:bg-slate-800 transition-all"
+                            >
+                                Yopish
+                            </button>
+                        </div>
+                    </div>
+                )}
+
                 <HistorySidebar
                     isOpen={isHistoryOpen}
                     onClose={() => setIsHistoryOpen(false)}
@@ -213,14 +290,6 @@ const App: React.FC = () => {
                             </div>
 
                             <div className="flex items-center gap-6">
-                                <button
-                                    onClick={() => setShowAdminLogin(true)}
-                                    className="flex items-center gap-2 text-sm font-black text-slate-400 hover:text-blue-600 transition-all uppercase tracking-widest mr-4"
-                                    title="Admin Panelga Kirish"
-                                >
-                                    <Shield className="w-4 h-4" />
-                                    <span className="hidden sm:inline">Kirish</span>
-                                </button>
                                 <button
                                     onClick={() => setIsHistoryOpen(true)}
                                     className="flex items-center gap-2 text-sm font-black text-slate-400 hover:text-indigo-600 transition-all uppercase tracking-widest"

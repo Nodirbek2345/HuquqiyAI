@@ -1,31 +1,55 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, HttpException, HttpStatus } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { AiOrchestratorService } from '../../ai/orchestrator.service';
 import { CreateKazusDto } from './dto/create-kazus.dto';
 
 @Injectable()
 export class KazusService {
-    constructor(private prisma: PrismaService) { }
+    constructor(
+        private prisma: PrismaService,
+        private aiOrchestrator: AiOrchestratorService,
+    ) { }
 
     async solve(dto: CreateKazusDto) {
-        // TODO: AI Orchestrator bilan integratsiya
-        const result = await this.prisma.analysis.create({
-            data: {
-                documentType: 'Kazus yechimi',
-                documentText: dto.situation,
-                mode: 'kazus',
-                summary: 'Kazus tahlili bajarilmoqda...',
-                overallRisk: 'MEDIUM',
-                riskScore: 50,
-                issues: [],
-                recommendations: [],
-            },
-        });
+        let result;
+        try {
+            result = await this.aiOrchestrator.analyzeDocument(dto.situation, 'kazus');
+        } catch (e: any) {
+            console.error('⚠️ AI Orchestrator kazus xatosi:', e.message);
+            throw new HttpException(
+                `AI kazus tahlilida xatolik: ${e.message}`,
+                HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
 
-        return {
-            id: result.id,
-            message: 'Kazus qabul qilindi',
-            status: 'processing',
-        };
+        try {
+            const kazus = await this.prisma.analysis.create({
+                data: {
+                    documentType: result.documentType || 'Kazus tahlili',
+                    documentText: dto.situation,
+                    mode: 'kazus',
+                    summary: result.summary,
+                    overallRisk: result.overallRisk || 'MEDIUM',
+                    riskScore: result.riskScore || 50,
+                    issues: result.issues || [],
+                    recommendations: result.recommendations || [],
+                    topRisks: result.topRisks || [],
+                    legalCompliance: result.legalCompliance || {},
+                    detailedConclusion: result.detailedConclusion,
+                },
+            });
+
+            return {
+                ...result,
+                id: kazus.id,
+            };
+        } catch (dbError) {
+            console.error('⚠️ DB Save Failed for kazus:', dbError.message);
+            return {
+                ...result,
+                id: `temp-${crypto.randomUUID()}`,
+            };
+        }
     }
 
     async findAll() {

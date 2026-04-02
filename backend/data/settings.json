@@ -1,9 +1,10 @@
 {
   "geminiEnabled": true,
   "openaiEnabled": true,
-  "temperature": 0.1,
+  "temperature": 0,
   "maxTokens": "32,768 (Katta Kontekst)",
   "twoFactorEnabled": true,
   "sessionDuration": "15 daqiqa",
-  "whitelistedIps": "192.168.1.0/24\n10.0.0.5\n213.230.100.12"
+  "whitelistedIps": "192.168.1.0/24\n10.0.0.5\n213.230.100.12",
+  "groqEnabled": true
 }

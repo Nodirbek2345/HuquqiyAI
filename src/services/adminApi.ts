@@ -1,7 +1,7 @@
 // Admin Panel API Client
 // Handles authentication and admin panel data fetching
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 export interface AdminUser {
     id: string;
@@ -95,35 +95,16 @@ async function apiRequest<T>(
 
 // Login
 export async function adminLogin(login: string, password: string): Promise<LoginResponse> {
-    try {
-        const response = await apiRequest<LoginResponse>('/api/admin/login', {
-            method: 'POST',
-            body: JSON.stringify({ login, password }),
-        });
+    const response = await apiRequest<LoginResponse>('/api/admin/login', {
+        method: 'POST',
+        body: JSON.stringify({ login, password }),
+    });
 
-        if (response.success && response.token) {
-            setAuthData(response.token, response.admin);
-        }
-
-        return response;
-    } catch (error) {
-        // Fallback to hardcoded auth if backend is not available
-        if (login === 'admin' && password === 'admin123') {
-            const mockAdmin: AdminUser = {
-                id: 'local-admin',
-                login: 'admin',
-                name: 'Admin User',
-                role: 'SUPER_ADMIN',
-            };
-            setAuthData('local_token_' + Date.now(), mockAdmin);
-            return {
-                success: true,
-                token: 'local_token_' + Date.now(),
-                admin: mockAdmin,
-            };
-        }
-        throw error;
+    if (response.success && response.token) {
+        setAuthData(response.token, response.admin);
     }
+
+    return response;
 }
 
 // Logout
@@ -141,11 +122,6 @@ export async function adminLogout(): Promise<void> {
 export async function validateToken(): Promise<AdminUser | null> {
     const token = getStoredToken();
     if (!token) return null;
-
-    // Local token fallback
-    if (token.startsWith('local_token_')) {
-        return getStoredAdmin();
-    }
 
     try {
         const response = await apiRequest<{ success: boolean; admin: AdminUser }>('/api/admin/profile');
@@ -229,7 +205,6 @@ export interface AnalysisListResponse {
 }
 
 // Get analysis list for admin monitor
-// Get analysis list for admin monitor
 export async function getAnalysisList(page = 1, limit = 20, search = '', status = ''): Promise<AnalysisListResponse> {
     try {
         const queryParams = new URLSearchParams({
@@ -252,39 +227,9 @@ export async function getAnalysisList(page = 1, limit = 20, search = '', status 
             limit,
         };
     } catch {
-        // Return mock data if backend unavailable
-        let mockData = [
-            { id: 'DOC-1024', documentType: 'Shartnoma', mode: 'detailed', overallRisk: 'Yuqori', riskScore: 85, summary: 'Mehnat shartnomasi №41', createdAt: '2026-01-29T10:00:00Z' },
-            { id: 'DOC-1023', documentType: 'Ariza', mode: 'quick', overallRisk: 'Past', riskScore: 15, summary: 'Ariza (Ta\'til bo\'yicha)', createdAt: '2026-01-29T09:00:00Z' },
-            { id: 'DOC-1022', documentType: 'Buyruq', mode: 'quick', overallRisk: 'O\'rta', riskScore: 45, summary: 'Xarid qilish bo\'yicha buyruq', createdAt: '2026-01-28T14:00:00Z' },
-            { id: 'DOC-1021', documentType: 'Memorandum', mode: 'detailed', overallRisk: 'Yuqori', riskScore: 92, summary: 'Hamkorlik Memorandumi', createdAt: '2026-01-28T11:00:00Z' },
-            { id: 'DOC-1020', documentType: 'Nizom', mode: 'quick', overallRisk: 'Past', riskScore: 30, summary: 'Ichki tartib qoidalar', createdAt: '2026-01-27T16:00:00Z' },
-        ];
-
-        // Filter by status if provided (simulating backend logic)
-        if (status) {
-            mockData = mockData.filter(doc => {
-                let docStatus = 'Tasdiqlangan';
-                if (doc.riskScore >= 80) docStatus = 'Rad etilgan';
-                else if (doc.riskScore >= 50) docStatus = 'Ko\'rib chiqilmoqda';
-                else if (doc.riskScore >= 30) docStatus = 'Tahlil qilinmoqda';
-
-                return docStatus === status;
-            });
-        }
-
-        // Filter by search
-        if (search) {
-            const lowerSearch = search.toLowerCase();
-            mockData = mockData.filter(doc =>
-                doc.summary.toLowerCase().includes(lowerSearch) ||
-                doc.id.toLowerCase().includes(lowerSearch)
-            );
-        }
-
         return {
-            analyses: mockData,
-            total: mockData.length,
+            analyses: [],
+            total: 0,
             page,
             limit,
         };
@@ -303,13 +248,9 @@ export async function getKazusList(page = 1, limit = 20): Promise<{ kazuslar: an
         const data = await response.json();
         return { kazuslar: data, total: data.length };
     } catch {
-        // Return mock data
         return {
-            kazuslar: [
-                { id: 'KZ-1001', documentText: 'Xodim bilan mehnat shartnomasi bekor qilinganda hisob-kitob kechikishi', summary: 'Mehnat shartnomasi buzilishi (Hisob-kitob)', overallRisk: 'HIGH', riskScore: 85, issues: [], recommendations: [], createdAt: '2026-01-29T10:00:00Z' },
-                { id: 'KZ-1002', documentText: 'Kompaniya mulkiga yetkazilgan zarar bo\'yicha moddiy javobgarlik', summary: 'Mol-mulk zararlanishi (Kompensatsiya)', overallRisk: 'MEDIUM', riskScore: 45, issues: [], recommendations: [], createdAt: '2026-01-28T14:30:00Z' },
-            ],
-            total: 2,
+            kazuslar: [],
+            total: 0,
         };
     }
 }
@@ -326,38 +267,9 @@ export async function getRejectedList(page = 1, limit = 20): Promise<{ rejected:
         const data = await response.json();
         return { rejected: data, total: data.length };
     } catch {
-        // Return mock data with correct structure matching RejectedDoc interface
         return {
-            rejected: [
-                {
-                    id: 'REJ-001',
-                    documentType: 'Nizom',
-                    summary: 'Ichki tartib qoidalar loyihasi',
-                    issues: [
-                        { description: 'Mehnat kodeksi 105-moddasiga zid bandlar mavjud' },
-                        { description: 'Imzo vakolati tekshirilmagan' }
-                    ],
-                    recommendations: [
-                        { description: '12-bandni butunlay chiqarib tashlash' },
-                        { description: 'Yuridik bo\'lim vizasini olish' }
-                    ],
-                    createdAt: '2026-01-29T14:30:00Z'
-                },
-                {
-                    id: 'REJ-002',
-                    documentType: 'Shartnoma',
-                    summary: 'Pudrat shartnomasi №45',
-                    issues: [
-                        { description: 'Tomonlarning rekvizitlari to\'liq emas' },
-                        { description: 'Bank hisob raqami xato' }
-                    ],
-                    recommendations: [
-                        { description: 'Bank rekvizitlarini to\'ldirish' }
-                    ],
-                    createdAt: '2026-01-28T09:15:00Z'
-                },
-            ],
-            total: 2,
+            rejected: [],
+            total: 0,
         };
     }
 }
@@ -374,39 +286,9 @@ export async function getTemplatesList(page = 1, limit = 20): Promise<{ template
         const data = await response.json();
         return { templates: data, total: data.length };
     } catch {
-        // Return mock data
         return {
-            templates: [
-                {
-                    id: 'TPL-001',
-                    summary: 'Mehnat shartnomasi (Standart)',
-                    documentType: 'Shartnomalar',
-                    createdAt: '2026-01-29T10:00:00Z',
-                    version: 'v2.6'
-                },
-                {
-                    id: 'TPL-002',
-                    summary: 'Da\'vo Arizasi (Sud)',
-                    documentType: 'Arizalar',
-                    createdAt: '2026-01-28T15:30:00Z',
-                    version: 'v1.4'
-                },
-                {
-                    id: 'TPL-003',
-                    summary: 'Buyruq (Ishga qabul qilish)',
-                    documentType: 'Buyruqlar',
-                    createdAt: '2026-01-25T09:00:00Z',
-                    version: 'v3.0'
-                },
-                {
-                    id: 'TPL-004',
-                    summary: 'Tushuntirish xati',
-                    documentType: 'Kadrlar',
-                    createdAt: '2026-01-20T11:20:00Z',
-                    version: 'v1.0'
-                },
-            ],
-            total: 34,
+            templates: [],
+            total: 0,
         };
     }
 }
@@ -540,6 +422,32 @@ export async function updateUser(id: string, data: any): Promise<any> {
         // Mock success return
         return { id, ...data };
     }
+}
+
+// ==========================================
+// PLATFORM USER MANAGEMENT
+// ==========================================
+
+export async function getPlatformUsersList(): Promise<any[]> {
+    try {
+        const response = await apiRequest<{ success: boolean; users: any[] }>('/api/admin/platform-users');
+        return response.users || [];
+    } catch (e) {
+        console.error('Failed to fetch platform users from DB', e);
+        return [];
+    }
+}
+
+export async function updatePlatformUserStatusApi(id: string, status: string): Promise<any> {
+    const response = await apiRequest<{ success: boolean; user: any }>(`/api/admin/platform-users/${id}/status`, {
+        method: 'PUT',
+        body: JSON.stringify({ status })
+    });
+    return response.user;
+}
+
+export async function deletePlatformUserApi(id: string): Promise<void> {
+    await apiRequest(`/api/admin/platform-users/${id}`, { method: 'DELETE' });
 }
 
 // ==========================================
