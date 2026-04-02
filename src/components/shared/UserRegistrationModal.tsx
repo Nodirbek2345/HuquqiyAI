@@ -178,9 +178,9 @@ export const UserRegistrationModal: React.FC<Props> = ({ isOpen, onClose, onRegi
                         <button
                             type="submit"
                             disabled={saving || !fullName.trim() || !email.trim() || !phone.trim()}
-                            className={`w-2/3 font-bold text-sm py-3 rounded-xl transition-all flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white ${(saving || !fullName.trim() || !email.trim() || !phone.trim())
-                                    ? 'opacity-60 cursor-not-allowed shadow-none'
-                                    : 'shadow-lg shadow-blue-600/20 hover:from-blue-700 hover:to-indigo-700 hover:-translate-y-0.5'
+                            className={`w-2/3 font-bold text-sm py-3 rounded-xl transition-all flex items-center justify-center gap-2 text-white ${(saving || !fullName.trim() || !email.trim() || !phone.trim())
+                                    ? 'bg-red-300 cursor-not-allowed shadow-none'
+                                    : 'bg-red-600 shadow-lg shadow-red-600/20 hover:bg-red-700 hover:-translate-y-0.5'
                                 }`}
                         >
                             {saving ? (

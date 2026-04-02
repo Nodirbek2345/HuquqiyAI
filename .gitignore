@@ -26,3 +26,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Local test scripts with sensitive data
+backend/test_*.js
+backend/reset_admin.js
