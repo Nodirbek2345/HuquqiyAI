@@ -49,11 +49,11 @@ async function bootstrap() {
   // Global Error Handling
   app.useGlobalFilters(new HttpExceptionFilter());
 
-  // 🛡️ Validation — nomalum va ortiqcha maydonlarni rad etish
+  // 🛡️ Validation
   app.useGlobalPipes(new ValidationPipe({
     transform: true,
-    whitelist: true,
-    forbidNonWhitelisted: true,
+    whitelist: false,
+    forbidNonWhitelisted: false,
     disableErrorMessages: process.env.NODE_ENV === 'production',
   }));
 

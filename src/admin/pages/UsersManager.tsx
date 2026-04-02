@@ -52,8 +52,8 @@ export const UsersManager: React.FC = () => {
             setNewUser({ name: '', email: '', role: 'ADMIN', password: '' });
             fetchUsers();
             alert("✅ Foydalanuvchi muvaffaqiyatli yaratildi!");
-        } catch (error) {
-            alert("❌ Xatolik yuz berdi");
+        } catch (error: any) {
+            alert("❌ " + (error.message || "Xatolik yuz berdi"));
         } finally {
             setSaving(false);
         }

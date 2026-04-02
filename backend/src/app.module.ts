@@ -19,6 +19,8 @@ import { OcrModule } from './ocr/ocr.module';
 
 // Controllers
 import { HealthController } from './health.controller';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 
 @Module({
   imports: [
@@ -48,8 +50,9 @@ import { HealthController } from './health.controller';
     AdminModule,       // 5️⃣ Admin panel autentifikatsiya
     OcrModule,         // 6️⃣ OCR moduli
   ],
-  controllers: [HealthController],
+  controllers: [HealthController, AppController],
   providers: [
+    AppService,
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,

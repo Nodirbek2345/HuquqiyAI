@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException, OnModuleInit } from '@nestjs/common';
+import { Injectable, UnauthorizedException, OnModuleInit, ConflictException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../../prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
@@ -379,6 +379,11 @@ export class AdminService implements OnModuleInit {
     }
 
     async createUser(data: any) {
+        const existing = await this.prisma.admin.findUnique({ where: { login: data.email } });
+        if (existing) {
+            throw new ConflictException("Ushbu login (email) allaqachon tizimda mavjud!");
+        }
+
         const hashedPassword = await bcrypt.hash(data.password || '12345678', 10);
         return this.prisma.admin.create({
             data: {
