@@ -9,7 +9,8 @@ import { LocalRulesProvider } from "./providers/localRules";
 import { GeminiProvider } from "./providers/gemini";
 import { callOpenAI } from "./providers/openai";
 
-const API_URL = import.meta.env.VITE_API_URL || '';
+const isProd = typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+const API_URL = isProd ? 'https://huquqiyai-1.onrender.com' : (import.meta.env.VITE_API_URL || '');
 
 // ━━━━━━━━━━━━━━━━━━━━━━
 // ADOLATAI CORE AI ARCHITECTURE

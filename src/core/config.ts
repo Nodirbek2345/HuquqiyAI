@@ -30,7 +30,8 @@ const config = {
     // API SOZLAMALARI
     // ====================
     api: {
-        baseUrl: import.meta.env.VITE_API_URL || '',
+        // Xatoliksiz hardcode qilingan baza URL
+        baseUrl: (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') ? 'https://huquqiyai-1.onrender.com' : (import.meta.env.VITE_API_URL || ''),
         timeout: 30000
     },
 

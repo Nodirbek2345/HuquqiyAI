@@ -1,7 +1,8 @@
 // Admin Panel API Client
 // Handles authentication and admin panel data fetching
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || '';
+const isProd = typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+const API_BASE_URL = isProd ? 'https://huquqiyai-1.onrender.com' : (import.meta.env.VITE_API_URL || '');
 
 export interface AdminUser {
     id: string;

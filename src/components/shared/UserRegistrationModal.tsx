@@ -52,7 +52,8 @@ export const UserRegistrationModal: React.FC<Props> = ({ isOpen, onClose, onRegi
 
         setSaving(true);
         try {
-            const API_BASE_URL = import.meta.env.VITE_API_URL || '';
+            const isProd = typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+            const API_BASE_URL = isProd ? 'https://huquqiyai-1.onrender.com' : (import.meta.env.VITE_API_URL || '');
             const response = await fetch(`${API_BASE_URL}/api/register`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -179,8 +180,8 @@ export const UserRegistrationModal: React.FC<Props> = ({ isOpen, onClose, onRegi
                             type="submit"
                             disabled={saving || !fullName.trim() || !email.trim() || !phone.trim()}
                             className={`w-2/3 font-bold text-sm py-3 rounded-xl transition-all flex items-center justify-center gap-2 text-white ${(saving || !fullName.trim() || !email.trim() || !phone.trim())
-                                    ? 'bg-red-300 cursor-not-allowed shadow-none'
-                                    : 'bg-red-600 shadow-lg shadow-red-600/20 hover:bg-red-700 hover:-translate-y-0.5'
+                                ? 'bg-red-300 cursor-not-allowed shadow-none'
+                                : 'bg-red-600 shadow-lg shadow-red-600/20 hover:bg-red-700 hover:-translate-y-0.5'
                                 }`}
                         >
                             {saving ? (
