@@ -9,7 +9,7 @@ import { LocalRulesProvider } from "./providers/localRules";
 import { GeminiProvider } from "./providers/gemini";
 import { callOpenAI } from "./providers/openai";
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_URL = import.meta.env.VITE_API_URL || '';
 
 // ━━━━━━━━━━━━━━━━━━━━━━
 // ADOLATAI CORE AI ARCHITECTURE

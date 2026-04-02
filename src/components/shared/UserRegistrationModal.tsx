@@ -52,7 +52,7 @@ export const UserRegistrationModal: React.FC<Props> = ({ isOpen, onClose, onRegi
 
         setSaving(true);
         try {
-            const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+            const API_BASE_URL = import.meta.env.VITE_API_URL || '';
             const response = await fetch(`${API_BASE_URL}/api/register`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -178,9 +178,9 @@ export const UserRegistrationModal: React.FC<Props> = ({ isOpen, onClose, onRegi
                         <button
                             type="submit"
                             disabled={saving || !fullName.trim() || !email.trim() || !phone.trim()}
-                            className={`w-2/3 font-bold text-sm py-3 rounded-xl transition-all flex items-center justify-center gap-2 ${(saving || !fullName.trim() || !email.trim() || !phone.trim())
-                                ? 'bg-slate-200 text-slate-500 shadow-none cursor-not-allowed'
-                                : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-600/20 hover:from-blue-700 hover:to-indigo-700 hover:-translate-y-0.5'
+                            className={`w-2/3 font-bold text-sm py-3 rounded-xl transition-all flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white ${(saving || !fullName.trim() || !email.trim() || !phone.trim())
+                                    ? 'opacity-60 cursor-not-allowed shadow-none'
+                                    : 'shadow-lg shadow-blue-600/20 hover:from-blue-700 hover:to-indigo-700 hover:-translate-y-0.5'
                                 }`}
                         >
                             {saving ? (
