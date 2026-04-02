@@ -16,9 +16,10 @@ interface SidebarProps {
     activePage: string;
     onNavigate: (page: string) => void;
     onLogout: () => void;
+    isOpen?: boolean;
 }
 
-export const AdminSidebar: React.FC<SidebarProps> = ({ activePage, onNavigate, onLogout }) => {
+export const AdminSidebar: React.FC<SidebarProps> = ({ activePage, onNavigate, onLogout, isOpen = false }) => {
     const menuItems = [
         { id: 'dashboard', label: 'Boshqaruv Paneli', icon: LayoutDashboard },
         { id: 'analysis', label: 'Hujjat Tahlili', icon: FileText },
@@ -32,7 +33,7 @@ export const AdminSidebar: React.FC<SidebarProps> = ({ activePage, onNavigate, o
     ];
 
     return (
-        <aside className="fixed left-0 top-0 h-screen w-64 bg-slate-900 text-white flex flex-col z-50">
+        <aside className={`fixed left-0 top-0 h-screen w-64 bg-slate-900 text-white flex flex-col z-50 transition-transform duration-300 md:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
             {/* Brand – bosganda asosiy sahifaga orqaga qaytish */}
             <button
                 type="button"

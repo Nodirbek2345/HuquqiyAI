@@ -1,13 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Bell, Search, User, LogOut, Settings, ChevronDown, Lock, ArrowRight } from 'lucide-react';
+import { Bell, Search, User, LogOut, Settings, ChevronDown, Lock, ArrowRight, Menu } from 'lucide-react';
 
 interface HeaderProps {
     title: string;
     onLogout?: () => void;
     onNavigate?: (page: string) => void;
+    onToggleMobileMenu?: () => void;
 }
 
-export const AdminHeader: React.FC<HeaderProps> = ({ title, onLogout, onNavigate }) => {
+export const AdminHeader: React.FC<HeaderProps> = ({ title, onLogout, onNavigate, onToggleMobileMenu }) => {
     const [showNotifications, setShowNotifications] = useState(false);
     const notificationRef = useRef<HTMLButtonElement>(null);
 
@@ -69,8 +70,18 @@ export const AdminHeader: React.FC<HeaderProps> = ({ title, onLogout, onNavigate
 
 
     return (
-        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 sticky top-0 z-40">
-            <h2 className="text-lg font-bold text-slate-800 uppercase tracking-tight">{title}</h2>
+        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-40">
+            <div className="flex items-center gap-3">
+                {onToggleMobileMenu && (
+                    <button
+                        onClick={onToggleMobileMenu}
+                        className="md:hidden p-2 -ml-2 text-slate-500 hover:bg-slate-100 rounded-lg transition-colors"
+                    >
+                        <Menu className="w-5 h-5" />
+                    </button>
+                )}
+                <h2 className="text-[15px] sm:text-lg font-bold text-slate-800 uppercase tracking-tight truncate max-w-[150px] sm:max-w-none">{title}</h2>
+            </div>
 
             <div className="flex items-center gap-6">
                 {/* Search */}

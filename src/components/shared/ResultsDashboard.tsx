@@ -196,7 +196,7 @@ const ResultsDashboard: React.FC<ResultsDashboardProps> = ({ result, onReset, on
   return (
     <div className="w-full max-w-[1600px] mx-auto pb-16 px-4 animate-in fade-in duration-500 space-y-10">
       {/* Dynamic Header */}
-      <header className="flex flex-col md:flex-row justify-between items-center bg-white p-6 rounded-[32px] border border-slate-100 shadow-xl no-print">
+      <header className="flex flex-col md:flex-row justify-between items-center gap-6 bg-white p-6 rounded-[32px] border border-slate-100 shadow-xl no-print">
         <div className="flex items-center gap-6">
           <div className={`w-14 h-14 rounded-[22px] flex items-center justify-center text-white shadow-lg ${isKazus ? 'bg-indigo-600' : isRejected ? 'bg-rose-600' : isTemplate ? 'bg-emerald-600' : 'bg-blue-600'}`}>
             {isKazus ? <BrainCircuit className="w-8 h-8" /> : isRejected ? <FileWarning className="w-8 h-8" /> : isTemplate ? <FilePlus className="w-8 h-8" /> : <ShieldCheck className="w-8 h-8" />}
@@ -225,18 +225,18 @@ const ResultsDashboard: React.FC<ResultsDashboardProps> = ({ result, onReset, on
           </button>
         </div>
 
-        <div className="flex gap-2">
-          <button onClick={() => setShowChat(!showChat)} className={`px-5 py-3 border-2 rounded-xl font-bold text-xs transition-all flex items-center gap-2 active:scale-95 ${showChat ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white border-slate-100 text-slate-600 hover:bg-slate-50'}`}>
+        <div className="flex flex-wrap justify-center gap-2 w-full md:w-auto">
+          <button onClick={() => setShowChat(!showChat)} className={`px-5 py-3 border-2 rounded-xl font-bold text-xs transition-all flex items-center gap-2 active:scale-95 w-full sm:w-auto justify-center ${showChat ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white border-slate-100 text-slate-600 hover:bg-slate-50'}`}>
             <MessageSquare className="w-4 h-4" /> {showChat ? "CHATNI YOPISH" : "CHATNI OCHISH"}
           </button>
           <button
             onClick={() => window.print()}
-            className="px-5 py-3 border-2 border-emerald-200 bg-emerald-50 text-emerald-700 rounded-xl font-bold text-xs hover:bg-emerald-100 transition-all flex items-center gap-2 active:scale-95"
+            className="px-5 py-3 border-2 border-emerald-200 bg-emerald-50 text-emerald-700 rounded-xl font-bold text-xs hover:bg-emerald-100 transition-all flex items-center gap-2 active:scale-95 w-[48%] sm:w-auto justify-center"
             title="Hujjatni chop etish"
           >
             <Printer className="w-4 h-4" /> CHOP ETISH
           </button>
-          <button onClick={onReset} className="px-5 py-3 border-2 border-slate-200 text-slate-900 rounded-xl font-bold text-xs hover:bg-slate-50 transition-all flex items-center gap-2 active:scale-95">
+          <button onClick={onReset} className="px-5 py-3 border-2 border-slate-200 text-slate-900 rounded-xl font-bold text-xs hover:bg-slate-50 transition-all flex items-center gap-2 active:scale-95 w-[48%] sm:w-auto justify-center">
             <ArrowLeft className="w-4 h-4" /> ORQAGA
           </button>
         </div>

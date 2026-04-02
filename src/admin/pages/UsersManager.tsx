@@ -125,8 +125,8 @@ export const UsersManager: React.FC = () => {
 
             {/* Platform Users Tab */}
             {activeTab === 'platform' && (
-                <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-                    <table className="w-full text-sm text-left">
+                <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-x-auto">
+                    <table className="w-full text-sm text-left min-w-[800px]">
                         <thead className="bg-slate-50 text-slate-500 font-bold text-xs uppercase border-b border-slate-100">
                             <tr>
                                 <th className="px-6 py-4">F.I.SH</th>
@@ -225,8 +225,8 @@ export const UsersManager: React.FC = () => {
             {/* Admin Users Tab */}
             {activeTab === 'admin' && (
 
-                <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-                    <table className="w-full text-sm text-left">
+                <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-x-auto">
+                    <table className="w-full text-sm text-left min-w-[800px]">
                         <thead className="bg-slate-50 text-slate-500 font-bold text-xs uppercase border-b border-slate-100">
                             <tr>
                                 <th className="px-6 py-4">F.I.SH</th>

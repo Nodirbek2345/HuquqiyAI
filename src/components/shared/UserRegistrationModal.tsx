@@ -79,8 +79,8 @@ export const UserRegistrationModal: React.FC<Props> = ({ isOpen, onClose, onRegi
     };
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-md p-4">
-            <div className="bg-white/95 backdrop-blur-xl border border-white/60 rounded-[28px] shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-300">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto relative">
                 {/* Header */}
                 <div className="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
                     <div>
@@ -168,18 +168,18 @@ export const UserRegistrationModal: React.FC<Props> = ({ isOpen, onClose, onRegi
                     </div>
 
                     {/* Submit Actions */}
-                    <div className="flex gap-3 pt-2">
+                    <div className="flex flex-col sm:flex-row gap-3 pt-2">
                         <button
                             type="button"
                             onClick={onClose}
-                            className="w-1/3 bg-white border border-slate-200 text-slate-600 font-bold text-sm py-3 rounded-xl hover:bg-slate-50 transition-all text-center shadow-sm"
+                            className="w-full sm:w-1/3 bg-white border border-slate-200 text-slate-600 font-bold text-sm py-3 rounded-xl hover:bg-slate-50 transition-all text-center shadow-sm"
                         >
                             Orqaga
                         </button>
                         <button
                             type="submit"
                             disabled={saving || !fullName.trim() || !email.trim() || !phone.trim()}
-                            className={`w-2/3 font-bold text-sm py-3 rounded-xl transition-all flex items-center justify-center gap-2 text-white ${(saving || !fullName.trim() || !email.trim() || !phone.trim())
+                            className={`w-full sm:w-2/3 font-bold text-sm py-3 rounded-xl transition-all flex items-center justify-center gap-2 text-white ${(saving || !fullName.trim() || !email.trim() || !phone.trim())
                                 ? 'bg-red-300 cursor-not-allowed shadow-none'
                                 : 'bg-red-600 shadow-lg shadow-red-600/20 hover:bg-red-700 hover:-translate-y-0.5'
                                 }`}

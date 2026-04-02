@@ -73,7 +73,7 @@ const UploadSection: React.FC<UploadSectionProps> = ({ onAnalyze, onShowHistory,
 
       {!isTemplate && (
         <div
-          className="bg-white rounded-[40px] p-10 text-center shadow-xl border border-slate-100 transition-all cursor-pointer hover:border-blue-200 group"
+          className="bg-white rounded-[40px] p-6 sm:p-10 text-center shadow-xl border border-slate-100 transition-all cursor-pointer hover:border-blue-200 group"
           onClick={() => fileInputRef.current?.click()}
         >
           <input type="file" ref={fileInputRef} className="hidden" accept=".txt,.docx,.pdf" onChange={(e) => e.target.files?.[0] && processFile(e.target.files[0])} />
@@ -133,13 +133,13 @@ const UploadSection: React.FC<UploadSectionProps> = ({ onAnalyze, onShowHistory,
 
       <div className="rounded-[40px] overflow-hidden shadow-2xl border border-slate-100 bg-white">
         <textarea
-          className="w-full h-72 p-10 bg-transparent border-none resize-none focus:ring-0 text-lg leading-relaxed font-medium placeholder:text-slate-200"
+          className="w-full h-72 p-6 sm:p-10 bg-transparent border-none resize-none focus:ring-0 text-base sm:text-lg leading-relaxed font-medium placeholder:text-slate-200"
           placeholder={isTemplate ? "Masalan: Men uyni ijaraga bermoqchiman, Toshkent shahrida, 1 yilga, 500$ narxda. Shartnoma yaratib ber." : "Matnni shu yerga joylang..."}
           value={text}
           onChange={(e) => setText(e.target.value)}
         ></textarea>
 
-        <div className="flex justify-between items-center px-10 py-8 bg-slate-50 border-t border-slate-100">
+        <div className="flex flex-col sm:flex-row justify-between items-center sm:items-center px-6 sm:px-10 py-6 sm:py-8 bg-slate-50 border-t border-slate-100 gap-4 sm:gap-0">
           <div className="flex flex-col">
             <span className="text-[9px] font-black uppercase tracking-[0.2em] mb-0.5 text-slate-300">HAJM</span>
             <span className="text-lg font-black text-slate-900 uppercase">
@@ -149,7 +149,7 @@ const UploadSection: React.FC<UploadSectionProps> = ({ onAnalyze, onShowHistory,
           <button
             disabled={!text.trim() || isProcessing}
             onClick={() => onAnalyze(text, fileName || undefined)}
-            className={`px-10 py-4 rounded-2xl font-black text-sm transition-all flex items-center gap-3 shadow-xl active:scale-95 text-white uppercase tracking-widest
+            className={`w-full sm:w-auto justify-center px-8 sm:px-10 py-4 rounded-2xl font-black text-sm transition-all flex items-center gap-3 shadow-xl active:scale-95 text-white uppercase tracking-widest
               ${text.trim() ? `${theme.buttonBg}` : 'bg-slate-100 text-slate-300 cursor-not-allowed border-none shadow-none'}`}
           >
             {theme.buttonLabel}

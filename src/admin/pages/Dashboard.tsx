@@ -121,47 +121,49 @@ export const Dashboard: React.FC<{ onNavigate?: (page: string) => void }> = ({ o
                         <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wide">Muhim Ogohlantirishlar (Real vaqtda)</h3>
                         <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
                     </div>
-                    <table className="w-full text-sm text-left">
-                        <thead className="bg-slate-50 text-slate-500 font-medium text-xs uppercase">
-                            <tr>
-                                <th className="px-6 py-3">Vaqt</th>
-                                <th className="px-6 py-3">Hodisa</th>
-                                <th className="px-6 py-3">Daraja</th>
-                                <th className="px-6 py-3">Holat</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-100">
-                            {loading ? (
-                                Array.from({ length: 4 }).map((_, i) => (
-                                    <tr key={i}>
-                                        <td className="px-6 py-3"><div className="h-4 w-12 bg-slate-100 animate-pulse rounded"></div></td>
-                                        <td className="px-6 py-3"><div className="h-4 w-48 bg-slate-100 animate-pulse rounded"></div></td>
-                                        <td className="px-6 py-3"><div className="h-4 w-16 bg-slate-100 animate-pulse rounded"></div></td>
-                                        <td className="px-6 py-3"><div className="h-4 w-20 bg-slate-100 animate-pulse rounded"></div></td>
-                                    </tr>
-                                ))
-                            ) : (
-                                alerts.map((row, i) => (
-                                    <tr
-                                        key={row.id || i}
-                                        className="hover:bg-slate-50/80 transition-colors cursor-pointer group"
-                                        onClick={() => onNavigate?.('audit')}
-                                    >
-                                        <td className="px-6 py-3 font-mono text-slate-500 text-xs">{row.time}</td>
-                                        <td className="px-6 py-3 font-medium text-slate-700 group-hover:text-blue-600 transition-colors">{row.event}</td>
-                                        <td className="px-6 py-3">
-                                            <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase ${row.level === 'KRITIK' ? 'bg-rose-100 text-rose-700' :
-                                                row.level === 'YUQORI' ? 'bg-orange-100 text-orange-700' :
-                                                    row.level === "O'RTA" ? 'bg-amber-100 text-amber-700' :
-                                                        'bg-emerald-100 text-emerald-700'
-                                                }`}>{row.level}</span>
-                                        </td>
-                                        <td className="px-6 py-3 text-slate-500">{row.status}</td>
-                                    </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-sm text-left min-w-[500px]">
+                            <thead className="bg-slate-50 text-slate-500 font-medium text-xs uppercase">
+                                <tr>
+                                    <th className="px-6 py-3">Vaqt</th>
+                                    <th className="px-6 py-3">Hodisa</th>
+                                    <th className="px-6 py-3">Daraja</th>
+                                    <th className="px-6 py-3">Holat</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100">
+                                {loading ? (
+                                    Array.from({ length: 4 }).map((_, i) => (
+                                        <tr key={i}>
+                                            <td className="px-6 py-3"><div className="h-4 w-12 bg-slate-100 animate-pulse rounded"></div></td>
+                                            <td className="px-6 py-3"><div className="h-4 w-48 bg-slate-100 animate-pulse rounded"></div></td>
+                                            <td className="px-6 py-3"><div className="h-4 w-16 bg-slate-100 animate-pulse rounded"></div></td>
+                                            <td className="px-6 py-3"><div className="h-4 w-20 bg-slate-100 animate-pulse rounded"></div></td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    alerts.map((row, i) => (
+                                        <tr
+                                            key={row.id || i}
+                                            className="hover:bg-slate-50/80 transition-colors cursor-pointer group"
+                                            onClick={() => onNavigate?.('audit')}
+                                        >
+                                            <td className="px-6 py-3 font-mono text-slate-500 text-xs">{row.time}</td>
+                                            <td className="px-6 py-3 font-medium text-slate-700 group-hover:text-blue-600 transition-colors">{row.event}</td>
+                                            <td className="px-6 py-3">
+                                                <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase ${row.level === 'KRITIK' ? 'bg-rose-100 text-rose-700' :
+                                                    row.level === 'YUQORI' ? 'bg-orange-100 text-orange-700' :
+                                                        row.level === "O'RTA" ? 'bg-amber-100 text-amber-700' :
+                                                            'bg-emerald-100 text-emerald-700'
+                                                    }`}>{row.level}</span>
+                                            </td>
+                                            <td className="px-6 py-3 text-slate-500">{row.status}</td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
                 {/* System Health */}
