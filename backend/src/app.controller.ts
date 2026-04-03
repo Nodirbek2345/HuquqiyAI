@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query } from '@nestjs/common';
 import { AppService } from './app.service';
 import { PrismaService } from './prisma/prisma.service';
 
@@ -27,6 +27,15 @@ export class AppController {
         profession: body.profession || 'yurist',
         status: 'pending',
       }
+    });
+    return { success: true, user };
+  }
+
+  @Get('users/check')
+  async checkUserStatus(@Query('email') email: string) {
+    if (!email) return { success: false, message: 'Email arg missing' };
+    const user = await this.prisma.platformUser.findUnique({
+      where: { email }
     });
     return { success: true, user };
   }

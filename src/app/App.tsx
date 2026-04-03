@@ -124,7 +124,7 @@ const App: React.FC = () => {
         );
     }
 
-    const startFlow = (mode: AnalysisMode) => {
+    const startFlow = async (mode: AnalysisMode) => {
         // 1) Tekshirish: foydalanuvchi ro'yxatdan o'tganmi?
         const user = getPlatformUser();
         if (!user) {
@@ -132,7 +132,25 @@ const App: React.FC = () => {
             setShowRegistration(true);
             return;
         }
-        // 2) Tasdiqlangan mi?
+
+        // 2) Statusni backend bilan sinxronizatsiya qilish
+        try {
+            const isProd = typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+            const API_BASE_URL = isProd ? 'https://huquqiyai-1.onrender.com' : (import.meta.env.VITE_API_URL || '');
+            const response = await fetch(`${API_BASE_URL}/api/users/check?email=${encodeURIComponent(user.email)}`);
+
+            if (response.ok) {
+                const dbData = await response.json();
+                if (dbData && dbData.user) {
+                    user.status = dbData.user.status;
+                    localStorage.setItem(STORAGE_KEYS.PLATFORM_USER, JSON.stringify(user));
+                }
+            }
+        } catch (e) {
+            console.error("Foydalanuvchi statusini tekshirishda xatolik", e);
+        }
+
+        // 3) Tasdiqlangan mi?
         if (user.status === 'rejected') {
             setShowRejectedAlert(true);
             return;
@@ -141,7 +159,7 @@ const App: React.FC = () => {
             setShowPendingAlert(true);
             return;
         }
-        // 3) Tasdiqlangan — davom etish
+        // 4) Tasdiqlangan — davom etish
         setAnalysisMode(mode);
         setCurrentStep('disclaimer');
     };
