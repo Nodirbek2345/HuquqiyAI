@@ -1,12 +1,12 @@
 // AdolatAI - Yangi strukturadagi asosiy App
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { Shield, BrainCircuit, FileSearch, Zap, FileX, FilePlus, History as HistoryIcon, Info } from 'lucide-react';
 
 // Yangi struktura importlari
 import { Header } from '../components/layout/Header';
 import { Sidebar } from '../components/layout/Sidebar';
-import { AdminApp } from '../admin/AdminApp';
+const AdminApp = lazy(() => import('../admin/AdminApp').then(m => ({ default: m.AdminApp })));
 
 // Shared komponentlar (eski)
 import DisclaimerModal from '../components/shared/DisclaimerModal';
@@ -110,7 +110,18 @@ const App: React.FC = () => {
 
     // Admin mode bo'lsa AdminApp (barcha hook'lar yuqorida chaqirilgan bo'lishi kerak)
     if (isAdminMode) {
-        return <AdminApp />;
+        return (
+            <Suspense fallback={
+                <div className="min-h-screen flex items-center justify-center bg-slate-50">
+                    <div className="flex flex-col items-center gap-4">
+                        <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+                        <p className="text-sm font-bold text-slate-500 uppercase tracking-widest animate-pulse">Yuklanmoqda...</p>
+                    </div>
+                </div>
+            }>
+                <AdminApp />
+            </Suspense>
+        );
     }
 
     const startFlow = (mode: AnalysisMode) => {

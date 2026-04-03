@@ -16,6 +16,20 @@ export default defineConfig(({ mode }) => {
         }
       },
     },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes('node_modules')) {
+              if (id.includes('recharts')) return 'vendor_recharts';
+              if (id.includes('lucide-react')) return 'vendor_icons';
+              return 'vendor';
+            }
+          }
+        }
+      },
+      chunkSizeWarningLimit: 1000,
+    },
     plugins: [react()],
     define: {
       'process.env': {}
