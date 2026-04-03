@@ -38,7 +38,8 @@ async function bootstrap() {
       'http://localhost:5173',
       'http://localhost:3000',
       'https://huquqiyai-2.onrender.com', // RENDER FRONTEND URL (Hardcoded)
-      process.env.FRONTEND_URL
+      process.env.FRONTEND_URL,
+      /^https:\/\/.*\.vercel\.app$/ // Allow any Vercel domain
     ].filter(Boolean),
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
