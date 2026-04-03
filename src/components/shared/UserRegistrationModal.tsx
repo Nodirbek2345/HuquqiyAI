@@ -178,28 +178,28 @@ export const UserRegistrationModal: React.FC<Props> = ({ isOpen, onClose, onRegi
                     </div>
 
                     {/* Submit Actions */}
-                    <div className="flex flex-col sm:flex-row gap-3 pt-6 pb-4 sm:pb-0">
+                    <div className="flex flex-row justify-between gap-3 pt-4 sm:pt-6 pb-4 sm:pb-0">
                         <button
                             type="button"
                             onClick={onClose}
-                            className="w-full sm:w-1/3 bg-slate-100 text-slate-600 font-black text-sm py-3.5 sm:py-3 rounded-2xl hover:bg-slate-200 transition-all text-center active:scale-95"
+                            className="flex-1 bg-slate-100 text-slate-600 font-bold text-sm py-3.5 sm:py-3 rounded-2xl hover:bg-slate-200 transition-all text-center active:scale-95"
                         >
                             Orqaga
                         </button>
                         <button
                             type="submit"
                             disabled={saving || !fullName.trim() || !email.trim() || !phone.trim()}
-                            className={`w-full sm:w-2/3 font-black text-[15px] sm:text-sm py-3.5 sm:py-3 rounded-2xl transition-all flex items-center justify-center gap-2 active:scale-95 duration-200 ${(saving || !fullName.trim() || !email.trim() || !phone.trim())
-                                ? 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none'
-                                : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-xl shadow-blue-600/30 hover:shadow-2xl hover:-translate-y-1'
+                            className={`flex-[2] font-black text-[14px] py-3.5 sm:py-3 rounded-2xl transition-all flex items-center justify-center gap-2 active:scale-95 duration-200 ${(saving || !fullName.trim() || !email.trim() || !phone.trim())
+                                ? 'bg-slate-200/80 text-slate-400 cursor-not-allowed shadow-none border border-slate-200'
+                                : 'bg-red-600 text-white shadow-[0_8px_16px_-6px_rgba(220,38,38,0.5)] hover:shadow-[0_12px_20px_-6px_rgba(220,38,38,0.6)] hover:-translate-y-0.5'
                                 }`}
                         >
                             {saving ? (
-                                <div className="w-5 h-5 border-3 border-white/30 border-t-white rounded-full animate-spin" />
+                                <div className="w-5 h-5 border-[3px] border-white/30 border-t-white rounded-full animate-spin" />
                             ) : (
-                                <CheckCircle className="w-5 h-5" />
+                                <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5" />
                             )}
-                            {saving ? 'Saqlanmoqda...' : "Ro'yxatdan o'tish"}
+                            {saving ? 'Kuting...' : "Ro'yxatdan o'tish"}
                         </button>
                     </div>
                 </form>
