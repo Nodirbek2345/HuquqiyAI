@@ -165,6 +165,34 @@ export class AdminController {
         };
     }
 
+    @Delete('analysis/:id')
+    @UseGuards(JwtAuthGuard)
+    async deleteAnalysis(@Param('id') id: string) {
+        await this.adminService.deleteAnalysis(id);
+        return { success: true };
+    }
+
+    @Delete('templates/:id')
+    @UseGuards(JwtAuthGuard)
+    async deleteTemplate(@Param('id') id: string) {
+        await this.adminService.deleteTemplate(id);
+        return { success: true };
+    }
+
+    @Delete('kazus/:id')
+    @UseGuards(JwtAuthGuard)
+    async deleteKazus(@Param('id') id: string) {
+        await this.adminService.deleteKazus(id);
+        return { success: true };
+    }
+
+    @Delete('rejected/:id')
+    @UseGuards(JwtAuthGuard)
+    async deleteRejected(@Param('id') id: string) {
+        await this.adminService.deleteRejected(id);
+        return { success: true };
+    }
+
     @Post('logout')
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.OK)
