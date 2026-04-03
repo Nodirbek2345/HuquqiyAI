@@ -329,72 +329,72 @@ const App: React.FC = () => {
                 <main className="flex-grow flex flex-col">
                     {/* Landing */}
                     {currentStep === 'landing' && (
-                        <div className="flex-grow flex flex-col items-center justify-center px-6 py-12 sm:py-20">
-                            <div className="max-w-7xl mx-auto w-full space-y-16">
-                                <div className="text-center space-y-6" onDoubleClick={() => setShowAdminLogin(true)} title="Admin kirish (Double Click)">
-                                    <div className="inline-flex items-center gap-2.5 px-6 py-2.5 rounded-full bg-blue-50/80 border border-blue-100 shadow-sm shadow-blue-100/40 text-blue-600 text-[13px] font-bold animate-in fade-in slide-in-from-top-4 duration-700">
-                                        <Zap className="w-4 h-4 fill-blue-600/10" />
+                        <div className="flex-grow flex flex-col items-center justify-center px-4 py-8 sm:px-6 sm:py-20">
+                            <div className="max-w-7xl mx-auto w-full space-y-10 sm:space-y-16">
+                                <div className="text-center space-y-5 sm:space-y-6 mt-4 sm:mt-0" onDoubleClick={() => setShowAdminLogin(true)} title="Admin kirish (Double Click)">
+                                    <div className="inline-flex items-center gap-2 px-4 py-1.5 sm:px-6 sm:py-2.5 rounded-full bg-blue-50/80 border border-blue-100 shadow-sm shadow-blue-100/40 text-blue-600 text-[11px] sm:text-[13px] font-bold animate-in fade-in slide-in-from-top-4 duration-700">
+                                        <Zap className="w-3 h-3 sm:w-4 sm:h-4 fill-blue-600/10" />
                                         <span>Yuridik ishingizga yordamchi AI</span>
                                     </div>
 
-                                    <h1 className="text-5xl sm:text-7xl font-black text-slate-900 tracking-tight leading-[1.05] animate-in fade-in slide-in-from-bottom-8 duration-700">
-                                        Yuridik ishingizni <br />
+                                    <h1 className="text-4xl sm:text-5xl md:text-7xl font-black text-slate-900 tracking-tight leading-[1.1] animate-in fade-in slide-in-from-bottom-8 duration-700 px-2 sm:px-0 break-words hyphens-auto">
+                                        Yuridik ishingizni <br className="hidden sm:block" />
                                         <span className="text-blue-600">to'liq avtomatlashtiring</span>
                                     </h1>
 
-                                    <p className="text-lg text-slate-500 max-w-3xl mx-auto font-medium animate-in fade-in duration-1000 delay-300">
+                                    <p className="text-sm sm:text-lg text-slate-500 max-w-3xl mx-auto font-medium animate-in fade-in duration-1000 delay-300 px-4 sm:px-0">
                                         AdolatAI hujjatlarni tahlil qiladi, kazuslarni yechadi va professional shablonlarni noldan yaratib beradi.
                                     </p>
                                 </div>
 
-                                {/* Feature Cards */}
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 animate-in fade-in zoom-in-95 duration-1000 delay-500">
+                                {/* Feature Cards: 2x2 grid on mobile, 4 in a row on desktop */}
+                                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 animate-in fade-in zoom-in-95 duration-1000 delay-500 w-full max-w-lg lg:max-w-none mx-auto">
                                     {/* Tahlil */}
                                     <div className="group relative">
-                                        <button onClick={() => startFlow('quick')} className="w-full h-full flex flex-col items-center text-center p-10 bg-white border border-slate-200 rounded-[48px] shadow-xl hover:shadow-blue-100/50 transition-all hover:-translate-y-2 overflow-hidden">
-                                            <div className="w-20 h-20 bg-blue-50 rounded-[28px] flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
-                                                <Zap className="w-8 h-8 text-blue-600" />
+                                        <button onClick={() => startFlow('quick')} className="w-full h-full flex flex-col items-center justify-center text-center p-5 sm:p-10 bg-white border border-slate-200 rounded-[28px] sm:rounded-[48px] shadow-lg sm:shadow-xl hover:shadow-blue-100/50 transition-all active:scale-[0.98] lg:hover:-translate-y-2 overflow-hidden">
+                                            <div className="w-12 h-12 sm:w-20 sm:h-20 bg-blue-50 rounded-[18px] sm:rounded-[28px] flex items-center justify-center mb-3 sm:mb-6 lg:group-hover:scale-110 transition-transform duration-500">
+                                                <Zap className="w-5 h-5 sm:w-8 sm:h-8 text-blue-600" />
                                             </div>
-                                            <h3 className="text-xl font-black text-slate-900 mb-2 uppercase">Tahlil</h3>
-                                            <p className="text-slate-500 text-xs font-medium">Shartnomalardagi yashirin xavflarni aniqlash</p>
+                                            <h3 className="text-sm sm:text-xl font-black text-slate-900 mb-1 sm:mb-2 uppercase">Tahlil</h3>
+                                            <p className="text-slate-500 text-[9px] sm:text-xs font-medium leading-relaxed px-1">Shartnomalardagi yashirin xavflarni aniqlash</p>
                                         </button>
-                                        <button onClick={() => openInfo('quick')} className="absolute top-6 right-6 p-2 bg-slate-50 text-slate-400 rounded-full hover:bg-blue-50 hover:text-blue-600 transition-all" title="Batafsil ma'lumot"><Info className="w-5 h-5" /></button>
+                                        <button onClick={() => openInfo('quick')} className="absolute top-3 right-3 sm:top-6 sm:right-6 p-1.5 sm:p-2 bg-slate-50/80 backdrop-blur-sm text-slate-400 rounded-full hover:bg-blue-50 hover:text-blue-600 transition-all z-10" title="Batafsil ma'lumot"><Info className="w-4 h-4 sm:w-5 sm:h-5" /></button>
                                     </div>
 
                                     {/* Kazus */}
                                     <div className="group relative">
-                                        <button onClick={() => startFlow('kazus')} className="w-full h-full flex flex-col items-center text-center p-10 bg-white border border-slate-200 rounded-[48px] shadow-xl hover:shadow-indigo-100/50 transition-all hover:-translate-y-2 overflow-hidden">
-                                            <div className="w-20 h-20 bg-indigo-50 rounded-[28px] flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
-                                                <BrainCircuit className="w-8 h-8 text-indigo-600" />
+                                        <button onClick={() => startFlow('kazus')} className="w-full h-full flex flex-col items-center justify-center text-center p-5 sm:p-10 bg-white border border-slate-200 rounded-[28px] sm:rounded-[48px] shadow-lg sm:shadow-xl hover:shadow-indigo-100/50 transition-all active:scale-[0.98] lg:hover:-translate-y-2 overflow-hidden">
+                                            <div className="w-12 h-12 sm:w-20 sm:h-20 bg-indigo-50 rounded-[18px] sm:rounded-[28px] flex items-center justify-center mb-3 sm:mb-6 lg:group-hover:scale-110 transition-transform duration-500">
+                                                <BrainCircuit className="w-5 h-5 sm:w-8 sm:h-8 text-indigo-600" />
                                             </div>
-                                            <h3 className="text-xl font-black text-slate-900 mb-2 uppercase">Kazus</h3>
-                                            <p className="text-slate-500 text-xs font-medium">Murakkab huquqiy vaziyatlarga mantiqiy yechimlar</p>
+                                            <h3 className="text-sm sm:text-xl font-black text-slate-900 mb-1 sm:mb-2 uppercase">Kazus</h3>
+                                            <p className="text-slate-500 text-[9px] sm:text-xs font-medium leading-relaxed px-1">Murakkab huquqiy vaziyatlarga mantiqiy yechimlar</p>
                                         </button>
-                                        <button onClick={() => openInfo('kazus')} className="absolute top-6 right-6 p-2 bg-slate-50 text-slate-400 rounded-full hover:bg-indigo-50 hover:text-indigo-600 transition-all" title="Batafsil ma'lumot"><Info className="w-5 h-5" /></button>
+                                        <button onClick={() => openInfo('kazus')} className="absolute top-3 right-3 sm:top-6 sm:right-6 p-1.5 sm:p-2 bg-slate-50/80 backdrop-blur-sm text-slate-400 rounded-full hover:bg-indigo-50 hover:text-indigo-600 transition-all z-10" title="Batafsil ma'lumot"><Info className="w-4 h-4 sm:w-5 sm:h-5" /></button>
                                     </div>
 
                                     {/* Rad Etilgan */}
                                     <div className="group relative">
-                                        <button onClick={() => startFlow('rejected')} className="w-full h-full flex flex-col items-center text-center p-10 bg-white border border-slate-200 rounded-[48px] shadow-xl hover:shadow-rose-100/50 transition-all hover:-translate-y-2 overflow-hidden">
-                                            <div className="w-20 h-20 bg-rose-50 rounded-[28px] flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
-                                                <FileX className="w-8 h-8 text-rose-600" />
+                                        <button onClick={() => startFlow('rejected')} className="w-full h-full flex flex-col items-center justify-center text-center p-5 sm:p-10 bg-white border border-slate-200 rounded-[28px] sm:rounded-[48px] shadow-lg sm:shadow-xl hover:shadow-rose-100/50 transition-all active:scale-[0.98] lg:hover:-translate-y-2 overflow-hidden">
+                                            <div className="w-12 h-12 sm:w-20 sm:h-20 bg-rose-50 rounded-[18px] sm:rounded-[28px] flex items-center justify-center mb-3 sm:mb-6 lg:group-hover:scale-110 transition-transform duration-500">
+                                                <FileX className="w-5 h-5 sm:w-8 sm:h-8 text-rose-600" />
                                             </div>
-                                            <h3 className="text-xl font-black text-slate-900 mb-2 uppercase">Rad Etilgan</h3>
-                                            <p className="text-slate-500 text-xs font-medium">Hujjat xatolarini diagnostika va to'g'rilash</p>
+                                            <h3 className="text-sm sm:text-xl font-black text-slate-900 mb-1 sm:mb-2 uppercase mt-[-2px]">Rad Etilgan</h3>
+                                            <p className="text-slate-500 text-[9px] sm:text-xs font-medium leading-relaxed px-1">Hujjat xatolarini diagnostika va to'g'rilash</p>
                                         </button>
-                                        <button onClick={() => openInfo('rejected')} className="absolute top-6 right-6 p-2 bg-slate-50 text-slate-400 rounded-full hover:bg-rose-50 hover:text-rose-600 transition-all" title="Batafsil ma'lumot"><Info className="w-5 h-5" /></button>
+                                        <button onClick={() => openInfo('rejected')} className="absolute top-3 right-3 sm:top-6 sm:right-6 p-1.5 sm:p-2 bg-slate-50/80 backdrop-blur-sm text-slate-400 rounded-full hover:bg-rose-50 hover:text-rose-600 transition-all z-10" title="Batafsil ma'lumot"><Info className="w-4 h-4 sm:w-5 sm:h-5" /></button>
                                     </div>
 
                                     {/* Shablonlar */}
                                     <div className="group relative">
-                                        <button onClick={() => startFlow('template')} className="w-full h-full flex flex-col items-center text-center p-10 bg-white border border-slate-200 rounded-[48px] shadow-xl hover:shadow-emerald-100/50 transition-all hover:-translate-y-2 overflow-hidden">
-                                            <div className="w-20 h-20 bg-emerald-50 rounded-[28px] flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
-                                                <FilePlus className="w-8 h-8 text-emerald-600" />
+                                        <button onClick={() => startFlow('template')} className="w-full h-full flex flex-col items-center justify-center text-center p-5 sm:p-10 bg-white border border-slate-200 rounded-[28px] sm:rounded-[48px] shadow-lg sm:shadow-xl hover:shadow-emerald-100/50 transition-all active:scale-[0.98] lg:hover:-translate-y-2 overflow-hidden">
+                                            <div className="w-12 h-12 sm:w-20 sm:h-20 bg-emerald-50 rounded-[18px] sm:rounded-[28px] flex items-center justify-center mb-3 sm:mb-6 lg:group-hover:scale-110 transition-transform duration-500">
+                                                <FilePlus className="w-5 h-5 sm:w-8 sm:h-8 text-emerald-600" />
                                             </div>
-                                            <h3 className="text-xl font-black text-slate-900 mb-2 uppercase">Shablonlar</h3>
-                                            <p className="text-slate-500 text-xs font-medium">Professional hujjatlarni noldan yaratish</p>
+                                            <h3 className="text-sm sm:text-xl font-black text-slate-900 mb-1 sm:mb-2 uppercase mt-[-2px]">Shablonlar</h3>
+                                            <p className="text-slate-500 text-[9px] sm:text-xs font-medium leading-relaxed px-1">Professional hujjatlarni noldan yaratish</p>
                                         </button>
-                                        <button onClick={() => openInfo('template')} className="absolute top-6 right-6 p-2 bg-slate-50 text-slate-400 rounded-full hover:bg-emerald-50 hover:text-emerald-600 transition-all" title="Batafsil ma'lumot"><Info className="w-5 h-5" /></button>
+                                        <button onClick={() => openInfo('template')} className="absolute top-3 right-3 sm:top-6 sm:right-6 p-1.5 sm:p-2 bg-slate-50/80 backdrop-blur-sm text-slate-400 rounded-full hover:bg-emerald-50 hover:text-emerald-600 transition-all z-10" title="Batafsil ma'lumot"><Info className="w-4 h-4 sm:w-5 sm:h-5" /></button>
                                     </div>
                                 </div>
                             </div>
