@@ -189,9 +189,9 @@ export const UserRegistrationModal: React.FC<Props> = ({ isOpen, onClose, onRegi
                         <button
                             type="submit"
                             disabled={saving || !fullName.trim() || !email.trim() || !phone.trim()}
-                            className={`w-full sm:w-2/3 font-black text-[15px] sm:text-sm py-3.5 sm:py-3 rounded-2xl transition-all flex items-center justify-center gap-2 text-white active:scale-95 duration-200 ${(saving || !fullName.trim() || !email.trim() || !phone.trim())
-                                ? 'bg-slate-300 cursor-not-allowed shadow-none'
-                                : 'bg-gradient-to-r from-blue-600 to-indigo-600 shadow-xl shadow-blue-600/30 hover:shadow-2xl hover:-translate-y-1'
+                            className={`w-full sm:w-2/3 font-black text-[15px] sm:text-sm py-3.5 sm:py-3 rounded-2xl transition-all flex items-center justify-center gap-2 active:scale-95 duration-200 ${(saving || !fullName.trim() || !email.trim() || !phone.trim())
+                                ? 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none'
+                                : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-xl shadow-blue-600/30 hover:shadow-2xl hover:-translate-y-1'
                                 }`}
                         >
                             {saving ? (
