@@ -52,8 +52,7 @@ export const UserRegistrationModal: React.FC<Props> = ({ isOpen, onClose, onRegi
 
         setSaving(true);
         try {
-            const isProd = typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
-            const API_BASE_URL = isProd ? 'https://huquqiyai-1.onrender.com' : (import.meta.env.VITE_API_URL || '');
+            const API_BASE_URL = import.meta.env.VITE_API_URL || '';
             const response = await fetch(`${API_BASE_URL}/api/register`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -109,7 +108,7 @@ export const UserRegistrationModal: React.FC<Props> = ({ isOpen, onClose, onRegi
                             value={fullName}
                             onChange={e => setFullName(e.target.value)}
                             placeholder="Masalan: Aziz Rahimov"
-                            className="w-full bg-slate-50 border-2 border-transparent focus:border-blue-500 focus:bg-white rounded-2xl px-5 py-3.5 sm:py-3 text-[15px] sm:text-sm outline-none transition-all shadow-sm font-bold text-slate-900 placeholder:text-slate-300 placeholder:font-medium"
+                            className="w-full bg-slate-50 border-[1.5px] border-slate-200 focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 rounded-2xl px-5 py-3.5 sm:py-3 text-[15px] sm:text-sm outline-none transition-all shadow-sm font-bold text-slate-900 placeholder:text-slate-400 placeholder:font-medium"
                         />
                     </div>
 
@@ -125,7 +124,7 @@ export const UserRegistrationModal: React.FC<Props> = ({ isOpen, onClose, onRegi
                             value={email}
                             onChange={e => setEmail(e.target.value)}
                             placeholder="aziz@email.com"
-                            className="w-full bg-slate-50 border-2 border-transparent focus:border-blue-500 focus:bg-white rounded-2xl px-5 py-3.5 sm:py-3 text-[15px] sm:text-sm outline-none transition-all shadow-sm font-bold text-slate-900 placeholder:text-slate-300 placeholder:font-medium"
+                            className="w-full bg-slate-50 border-[1.5px] border-slate-200 focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 rounded-2xl px-5 py-3.5 sm:py-3 text-[15px] sm:text-sm outline-none transition-all shadow-sm font-bold text-slate-900 placeholder:text-slate-400 placeholder:font-medium"
                         />
                     </div>
 
@@ -142,7 +141,7 @@ export const UserRegistrationModal: React.FC<Props> = ({ isOpen, onClose, onRegi
                                 value={phone}
                                 onChange={e => setPhone(e.target.value.replace(/[^\d+\s()-]/g, ''))}
                                 placeholder="+998 90 123 45 67"
-                                className="w-full bg-slate-50 border-2 border-transparent focus:border-blue-500 focus:bg-white rounded-2xl px-5 py-3.5 sm:py-3 text-[15px] sm:text-sm outline-none transition-all shadow-sm font-bold text-slate-900 placeholder:text-slate-300 placeholder:font-medium tracking-wide"
+                                className="w-full bg-slate-50 border-[1.5px] border-slate-200 focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 rounded-2xl px-5 py-3.5 sm:py-3 text-[15px] sm:text-sm outline-none transition-all shadow-sm font-bold text-slate-900 placeholder:text-slate-400 placeholder:font-medium tracking-wide"
                             />
                         </div>
                     </div>
@@ -157,7 +156,7 @@ export const UserRegistrationModal: React.FC<Props> = ({ isOpen, onClose, onRegi
                             <select
                                 value={profession}
                                 onChange={e => setProfession(e.target.value)}
-                                className="w-full bg-slate-50 border-2 border-transparent focus:border-blue-500 focus:bg-white rounded-2xl px-5 py-3.5 sm:py-3 text-[15px] sm:text-sm outline-none transition-all shadow-sm font-bold text-slate-900 appearance-none cursor-pointer"
+                                className="w-full bg-slate-50 border-[1.5px] border-slate-200 focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 rounded-2xl px-5 py-3.5 sm:py-3 text-[15px] sm:text-sm outline-none transition-all shadow-sm font-bold text-slate-900 appearance-none cursor-pointer"
                             >
                                 {PROFESSIONS.map(p => (
                                     <option key={p.value} value={p.value} className="font-medium text-slate-700">{p.label}</option>
