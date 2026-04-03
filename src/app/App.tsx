@@ -135,8 +135,7 @@ const App: React.FC = () => {
 
         // 2) Statusni backend bilan sinxronizatsiya qilish
         try {
-            const isProd = typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
-            const API_BASE_URL = isProd ? 'https://huquqiyai-1.onrender.com' : (import.meta.env.VITE_API_URL || '');
+            const API_BASE_URL = import.meta.env.VITE_API_URL || '';
             const response = await fetch(`${API_BASE_URL}/api/users/check?email=${encodeURIComponent(user.email)}`);
 
             if (response.ok) {
