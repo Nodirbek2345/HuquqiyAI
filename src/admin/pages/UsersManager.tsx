@@ -180,13 +180,29 @@ export const UsersManager: React.FC = () => {
                                                 {pu.status === 'pending' && (
                                                     <>
                                                         <button
-                                                            onClick={async () => { await updatePlatformUserStatusApi(pu.id, 'approved'); loadPlatformUsers(); }}
+                                                            onClick={async () => {
+                                                                try {
+                                                                    await updatePlatformUserStatusApi(pu.id, 'approved');
+                                                                    await loadPlatformUsers();
+                                                                    alert("User tasdiqlandi!");
+                                                                } catch (e: any) {
+                                                                    alert("Xatolik: " + e.message);
+                                                                }
+                                                            }}
                                                             className="px-3 py-1.5 bg-emerald-600 text-white text-xs font-bold rounded-md hover:bg-emerald-700 transition-colors flex items-center gap-1"
                                                         >
                                                             <CheckCircle className="w-3 h-3" /> Tasdiqlash
                                                         </button>
                                                         <button
-                                                            onClick={async () => { await updatePlatformUserStatusApi(pu.id, 'rejected'); loadPlatformUsers(); }}
+                                                            onClick={async () => {
+                                                                try {
+                                                                    await updatePlatformUserStatusApi(pu.id, 'rejected');
+                                                                    await loadPlatformUsers();
+                                                                    alert("User rad etildi!");
+                                                                } catch (e: any) {
+                                                                    alert("Xatolik: " + e.message);
+                                                                }
+                                                            }}
                                                             className="px-3 py-1.5 bg-rose-600 text-white text-xs font-bold rounded-md hover:bg-rose-700 transition-colors flex items-center gap-1"
                                                         >
                                                             <XCircle className="w-3 h-3" /> Rad etish
@@ -195,7 +211,14 @@ export const UsersManager: React.FC = () => {
                                                 )}
                                                 {pu.status !== 'pending' && (
                                                     <button
-                                                        onClick={async () => { await updatePlatformUserStatusApi(pu.id, 'pending'); loadPlatformUsers(); }}
+                                                        onClick={async () => {
+                                                            try {
+                                                                await updatePlatformUserStatusApi(pu.id, 'pending');
+                                                                await loadPlatformUsers();
+                                                            } catch (e: any) {
+                                                                alert("Xatolik: " + e.message);
+                                                            }
+                                                        }}
                                                         className="px-3 py-1.5 bg-slate-200 text-slate-700 text-xs font-bold rounded-md hover:bg-slate-300 transition-colors"
                                                     >
                                                         Qayta ko'rish
@@ -204,8 +227,13 @@ export const UsersManager: React.FC = () => {
                                                 <button
                                                     onClick={async () => {
                                                         if (window.confirm("Foydalanuvchini platformadan butunlay o'chirib tashlamoqchimisiz?")) {
-                                                            await deletePlatformUserApi(pu.id);
-                                                            loadPlatformUsers();
+                                                            try {
+                                                                await deletePlatformUserApi(pu.id);
+                                                                await loadPlatformUsers();
+                                                                alert("Foydalanuvchi o'chirildi!");
+                                                            } catch (e: any) {
+                                                                alert("Xatolik: " + e.message);
+                                                            }
                                                         }
                                                     }}
                                                     className="px-3 py-1.5 bg-rose-100 text-rose-600 border border-rose-200 text-xs font-bold rounded-md hover:bg-rose-200 transition-colors flex items-center gap-1"
