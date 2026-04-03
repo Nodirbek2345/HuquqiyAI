@@ -136,7 +136,7 @@ export const UserRegistrationModal: React.FC<Props> = ({ isOpen, onClose, onRegi
                             type="tel"
                             required
                             value={phone}
-                            onChange={e => setPhone(e.target.value)}
+                            onChange={e => setPhone(e.target.value.replace(/[^\d+\s()-]/g, ''))}
                             placeholder="+998 90 123 45 67"
                             className="w-full bg-slate-50/50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all shadow-sm font-medium text-slate-900"
                         />
@@ -197,4 +197,3 @@ export const UserRegistrationModal: React.FC<Props> = ({ isOpen, onClose, onRegi
         </div>
     );
 };
- 
