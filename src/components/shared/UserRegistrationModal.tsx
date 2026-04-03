@@ -197,3 +197,4 @@ export const UserRegistrationModal: React.FC<Props> = ({ isOpen, onClose, onRegi
         </div>
     );
 };
+ 
