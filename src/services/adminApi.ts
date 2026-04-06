@@ -132,13 +132,34 @@ export async function validateToken(): Promise<AdminUser | null> {
     }
 }
 
-// Get dashboard stats
+// ━━━ IN-MEMORY CACHE (60 soniya) ━━━
+// Admin sahifalar orasida tez o'tish uchun
+const CACHE_TTL = 60_000; // 60 sekund
+const apiCache = new Map<string, { data: any; timestamp: number }>();
+
+function getCached<T>(key: string): T | null {
+    const entry = apiCache.get(key);
+    if (entry && Date.now() - entry.timestamp < CACHE_TTL) {
+        return entry.data as T;
+    }
+    apiCache.delete(key);
+    return null;
+}
+
+function setCache(key: string, data: any): void {
+    apiCache.set(key, { data, timestamp: Date.now() });
+}
+
+// Get dashboard stats (cached)
 export async function getStats(): Promise<StatsData> {
+    const cached = getCached<StatsData>('stats');
+    if (cached) return cached;
+
     try {
         const response = await apiRequest<{ success: boolean; stats: StatsData }>('/api/admin/stats');
+        setCache('stats', response.stats);
         return response.stats;
     } catch {
-        // Return mock data if backend unavailable
         return {
             totalAnalysis: 1248,
             highRiskDocuments: 86,
@@ -149,13 +170,16 @@ export async function getStats(): Promise<StatsData> {
     }
 }
 
-// Get alerts
+// Get alerts (cached)
 export async function getAlerts(): Promise<Alert[]> {
+    const cached = getCached<Alert[]>('alerts');
+    if (cached) return cached;
+
     try {
         const response = await apiRequest<{ success: boolean; alerts: Alert[] }>('/api/admin/alerts');
+        setCache('alerts', response.alerts);
         return response.alerts;
     } catch {
-        // Return mock data if backend unavailable
         return [
             { id: '1', time: '10:42', event: 'Gemini API Kalit #1 Limiti Tugadi (429)', level: 'YUQORI', status: 'Almashtirildi' },
             { id: '2', time: '09:15', event: 'PDF O\'qish Xatosi (Buzilgan Fayl)', level: 'O\'RTA', status: 'Qayd etildi' },
@@ -165,13 +189,16 @@ export async function getAlerts(): Promise<Alert[]> {
     }
 }
 
-// Get system health
+// Get system health (cached)
 export async function getSystemHealth(): Promise<SystemHealth> {
+    const cached = getCached<SystemHealth>('health');
+    if (cached) return cached;
+
     try {
         const response = await apiRequest<{ success: boolean; health: SystemHealth }>('/api/admin/system-health');
+        setCache('health', response.health);
         return response.health;
     } catch {
-        // Return mock data if backend unavailable
         return {
             apiGateway: { status: 'Ishlamoqda', color: 'bg-emerald-500' },
             database: { status: 'Ishlamoqda', color: 'bg-emerald-500' },

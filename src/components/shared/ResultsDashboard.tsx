@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { AnalysisResult, AnalysisMode } from '../../types';
 import {
   Printer, MessageSquare, ArrowLeft, FileSearch, Eye, Copy, CheckCircle,
@@ -84,8 +84,8 @@ const ResultsDashboard: React.FC<ResultsDashboardProps> = ({ result, onReset, on
     </div>
   );
 
-  const renderDecreesPanel = () => {
-    // Collect all legal bases from issues
+  // ━━━ Memoized: qonuniy asoslar ro'yxati (har renderda qayta hisoblanmaydi) ━━━
+  const allBases = useMemo(() => {
     const issueBases = (result.issues || [])
       .filter((issue: any) => issue.legalBasis)
       .map((issue: any) => ({
@@ -95,14 +95,16 @@ const ResultsDashboard: React.FC<ResultsDashboardProps> = ({ result, onReset, on
         issueTitle: issue.title
       }));
 
-    // Collect root-level legalBases (Kazus mode)
     const rootBases = ((result as any).legalBases || []).map((base: any) => ({
       codeName: base.lawName || base.codeName || '',
       articleNumber: base.article || base.articleNumber || '',
       comment: base.comment || ''
     }));
 
-    const allBases = [...rootBases, ...issueBases];
+    return [...rootBases, ...issueBases];
+  }, [result]);
+
+  const renderDecreesPanel = () => {
 
     return (
       <div className="max-w-5xl mx-auto space-y-10 animate-in fade-in slide-in-from-bottom-6 duration-700">
@@ -268,4 +270,4 @@ const ResultsDashboard: React.FC<ResultsDashboardProps> = ({ result, onReset, on
   );
 };
 
-export default ResultsDashboard;
+export default React.memo(ResultsDashboard);
