@@ -80,7 +80,11 @@ export const ResultsTemplate: React.FC<ResultsTemplateProps> = ({ result, templa
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 animate-in fade-in duration-700">
             {/* Sidebar Controls */}
             <div className="lg:col-span-3 space-y-6 order-2 lg:order-1">
-                <GradientCard className="text-center bg-emerald-50/30 border-emerald-100 shadow-sm">
+                <GradientCard className="text-center bg-emerald-50/30 border-emerald-100 shadow-sm relative overflow-hidden">
+                    {/* DEV Version Badge */}
+                    <div className="absolute top-3 right-3 px-2.5 py-1 bg-amber-400 text-amber-900 text-[9px] font-black uppercase tracking-widest rounded-full shadow-sm animate-pulse">
+                        DEV
+                    </div>
                     <div className="mb-6 flex justify-center">
                         <div className="w-20 h-20 rounded-[1.5rem] bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white shadow-xl shadow-emerald-500/30">
                             <FilePlus className="w-10 h-10" />
@@ -88,11 +92,12 @@ export const ResultsTemplate: React.FC<ResultsTemplateProps> = ({ result, templa
                     </div>
                     <h3 className="text-xl font-black text-slate-800 mb-2">HUJJAT LOYIHASI</h3>
                     <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">{result.documentType}</p>
+                    <p className="text-[10px] font-bold text-amber-600 mt-2 uppercase tracking-widest">Dev versiya v0.1</p>
                 </GradientCard>
 
                 <GradientCard title="Qo'llanma" icon={Info}>
                     <p className="text-sm font-medium text-slate-600 leading-relaxed">
-                        Ushbu shablon <b>O'zbekiston Respublikasi</b> qonunchiligi va davlat standartlariga mos ravishda avtomatik generatsiya qilindi. Matnni o'zgartirish uchun qog'oz ustiga bosing va bevosita tahrirlang. [TO'LDIRING] qismlariga maxsus e'tibor qarating.
+                        Ushbu shablon <b>O'zbekiston Respublikasi</b> qonunchiligi va davlat standartlariga mos ravishda AI tomonidan avtomatik yaratildi. Hujjat matnini tahrirlash uchun qog'oz ustiga to'g'ridan-to'g'ri bosing. Belgilangan maydonlarni o'z ma'lumotlaringiz bilan to'ldiring.
                     </p>
                 </GradientCard>
 
@@ -283,7 +288,7 @@ export const ResultsTemplate: React.FC<ResultsTemplateProps> = ({ result, templa
                                     </div>
 
                                     <p className="text-sm font-medium text-slate-600 leading-relaxed">
-                                        {issue.description}
+                                        {issue.explanation || issue.description || issue.title}
                                     </p>
 
                                     {issue.clauseText && (
