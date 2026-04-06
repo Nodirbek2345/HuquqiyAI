@@ -107,34 +107,34 @@ const UploadSection: React.FC<UploadSectionProps> = ({ onAnalyze, onShowHistory,
           <p className="text-center text-[10px] font-black uppercase tracking-[0.25em] text-slate-400">
             ⚡ Tayyor shablonlardan birini tanlang yoki quyida o'zingiz yozing
           </p>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             {[
-              { emoji: '📝', label: 'Ishdan bo\'shash arizasi', prompt: 'Ishdan bo\'shash to\'g\'risida ariza tayyorlang. Xodim o\'z xohishiga ko\'ra ishdan bo\'shmoqchi. Ariza rasmiy uslubda, ish yuritish qoidalariga mos bo\'lsin.' },
-              { emoji: '🏠', label: 'Ijara shartnomasi', prompt: 'Ko\'chmas mulk ijara shartnomasi tayyorlang. Ijara beruvchi va ijara oluvchi o\'rtasida tuzilgan. To\'lov tartibi, fors-major, nizolarni hal qilish va bekor qilish bandlari bo\'lsin.' },
-              { emoji: '📢', label: 'Bildirgi', prompt: 'Rasmiy bildirgi tayyorlang. Tashkilot xodimlariga ma\'muriy qaror haqida xabardor qilish uchun. Hodisa bayoni, sabab va tavsiya bo\'lsin.' },
+              { emoji: '🏢', label: 'Tashkilot Ustavi', prompt: 'MChJ (Mas\'uliyati cheklangan jamiyat) uchun namunaviy ustav tayyorlang. Ta\'sischilar huquqlari, ustav fondi miqdori va boshqaruv organlari tartibi ko\'rsatilsin.' },
+              { emoji: '💼', label: 'Mexnat Shartnomasi', prompt: 'Xodim va ish beruvchi o\'rtasida standart mehnat shartnomasini tayyorlang. Sinov muddati, oylik maosh, ish vaqti va dam olish kunlari aniq belgilansin.' },
+              { emoji: '🏠', label: 'Ijara Shartnomasi', prompt: 'Turar joy (kvartira) ijarasi shartnomasini tayyorlang. Ijara haqi, kommunal to\'lovlar majburiyati, muddat va taraflarning javobgarliklari kiritilsin.' },
               { emoji: '📋', label: 'Buyruq', prompt: 'Tashkilot rahbarining rasmiy buyrug\'ini tayyorlang. Buyruqda asos, bajarilishi kerak amallar va mas\'ul shaxslar ko\'rsatilsin.' },
-              { emoji: '🤝', label: 'Xizmat ko\'rsatish shartnomasi', prompt: 'Xizmat ko\'rsatish shartnomasi tayyorlang. Ijrochi va buyurtmachi o\'rtasida. Xizmat turi, muddati, to\'lov tartibi, sifat talablar, javobgarlik bandlari bo\'lsin.' },
-              { emoji: '✉️', label: 'Xizmat xati', prompt: 'Rasmiy idoralararo xizmat xati tayyorlang. Bir tashkilotdan boshqasiga rasmiy murojaat yoki so\'rov shakli bo\'lsin.' },
-              { emoji: '⚖️', label: 'Da\'vo arizasi', prompt: 'Sudga beriladigan da\'vo arizasi tayyorlang. Fuqarolik ishi bo\'yicha. Da\'vogar va javobgar ma\'lumotlari, da\'vo asoslari, iltimos qismi bo\'lsin.' },
+              { emoji: '🤝', label: 'Xizmat ko\'rsatish', prompt: 'Xizmat ko\'rsatish shartnomasi tayyorlang. Ijrochi va buyurtmachi o\'rtasida. Xizmat turi, muddati, to\'lov tartibi, sifat talablar, javobgarlik bandlari bo\'lsin.' },
+              { emoji: '✉️', label: 'Xizmat Xati', prompt: 'Rasmiy idoralararo xizmat xati tayyorlang. Bir tashkilotdan boshqasiga rasmiy murojaat yoki so\'rov shakli bo\'lsin.' },
+              { emoji: '⚖️', label: 'Da\'vo Arizasi', prompt: 'Sudga beriladigan da\'vo arizasi tayyorlang. Fuqarolik ishi bo\'yicha. Da\'vogar va javobgar ma\'lumotlari, da\'vo asoslari, iltimos qismi bo\'lsin.' },
               { emoji: '🔑', label: 'Ishonchnoma', prompt: 'Notarial ishonchnoma shablonini tayyorlang. Vakolat beruvchi va vakolat oluvchi o\'rtasida. Vakolat turi va muddati ko\'rsatilsin.' },
             ].map((item, i) => (
               <button
                 key={i}
                 onClick={() => setText(item.prompt)}
-                className={`group flex flex-col items-center gap-3 p-6 bg-white rounded-3xl border-2 shadow-sm hover:shadow-xl hover:border-emerald-300 hover:-translate-y-1 transition-all duration-300 active:scale-95 ${text === item.prompt ? 'border-emerald-400 bg-emerald-50/50 shadow-emerald-100' : 'border-slate-100'
+                className={`group flex flex-col items-center gap-2 sm:gap-3 p-3 sm:p-6 bg-white rounded-2xl sm:rounded-3xl border-2 shadow-sm hover:shadow-xl hover:border-emerald-300 hover:-translate-y-1 transition-all duration-300 active:scale-95 ${text === item.prompt ? 'border-emerald-400 bg-emerald-50/50 shadow-emerald-100' : 'border-slate-100'
                   }`}
               >
-                <span className="text-3xl group-hover:scale-125 transition-transform duration-300">{item.emoji}</span>
-                <span className="text-xs font-black text-slate-700 uppercase tracking-wide text-center leading-tight">{item.label}</span>
+                <span className="text-2xl sm:text-3xl group-hover:scale-125 transition-transform duration-300">{item.emoji}</span>
+                <span className="text-[9px] sm:text-[11px] font-black text-slate-700 uppercase tracking-wide text-center leading-tight">{item.label}</span>
               </button>
             ))}
           </div>
         </div>
       )}
 
-      <div className="rounded-[40px] overflow-hidden shadow-2xl border border-slate-100 bg-white">
+      <div className="rounded-3xl sm:rounded-[40px] overflow-hidden shadow-2xl border border-slate-100 bg-white">
         <textarea
-          className="w-full h-72 p-6 sm:p-10 bg-transparent border-none resize-none focus:ring-0 text-base sm:text-lg leading-relaxed font-medium placeholder:text-slate-200"
+          className="w-full h-56 sm:h-72 p-5 sm:p-10 bg-transparent border-none resize-none focus:ring-0 text-sm sm:text-base lg:text-lg leading-relaxed font-medium placeholder:text-slate-200"
           placeholder={isTemplate ? "Masalan: Men uyni ijaraga bermoqchiman, Toshkent shahrida, 1 yilga, 500$ narxda. Shartnoma yaratib ber." : "Matnni shu yerga joylang..."}
           value={text}
           onChange={(e) => setText(e.target.value)}

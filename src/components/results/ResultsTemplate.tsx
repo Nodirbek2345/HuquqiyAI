@@ -37,7 +37,7 @@ export const ResultsTemplate: React.FC<ResultsTemplateProps> = ({ result, templa
     const [internalTemplate, setInternalTemplate] = useState(result.generatedTemplate || defaultTemplate);
     const [copied, setCopied] = useState(false);
     const [activeToolbarTab, setActiveToolbarTab] = useState<'Bosh sahifa' | "Qo'shish" | 'Sahifa'>('Bosh sahifa');
-    const [pagePadding, setPagePadding] = useState('64px');
+    const [pagePadding, setPagePadding] = useState('min(8vw, 64px)');
     const [pageOrientation, setPageOrientation] = useState<'portrait' | 'landscape'>('portrait');
     const [pageBg, setPageBg] = useState('#ffffff');
     const template = propTemplate || internalTemplate;
@@ -291,9 +291,9 @@ export const ResultsTemplate: React.FC<ResultsTemplateProps> = ({ result, templa
                             <div className="flex items-center gap-1 px-3 py-1.5 bg-white border-t border-slate-100 flex-wrap">
                                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mr-1">Chegaralar:</span>
                                 {([
-                                    { label: 'Keng', val: '96px' },
-                                    { label: "O'rta", val: '64px' },
-                                    { label: 'Tor', val: '32px' },
+                                    { label: 'Keng', val: 'min(12vw, 96px)' },
+                                    { label: "O'rta", val: 'min(8vw, 64px)' },
+                                    { label: 'Tor', val: 'min(4vw, 32px)' },
                                 ] as const).map(m => (
                                     <button
                                         key={m.label}
@@ -334,7 +334,7 @@ export const ResultsTemplate: React.FC<ResultsTemplateProps> = ({ result, templa
                     <Ruler />
 
                     {/* Page Container (Gray desk background) */}
-                    <div className="bg-[#e8e8e8] p-8 md:p-12 flex justify-center min-h-[900px]">
+                    <div className="bg-[#e8e8e8] p-3 sm:p-8 md:p-12 flex justify-center min-h-[900px]">
                         {/* A4 Page */}
                         <div
                             className={`w-full shadow-[0_2px_20px_rgba(0,0,0,0.12)] min-h-[1000px] flex flex-col font-serif text-slate-900 relative ${pageOrientation === 'landscape' ? 'max-w-[900px]' : 'max-w-[700px]'}`}
