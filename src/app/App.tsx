@@ -404,6 +404,10 @@ const App: React.FC = () => {
 
                                     {/* Shablonlar */}
                                     <div className="group relative">
+                                        {/* DEMO VARYANT badge */}
+                                        <div className="absolute top-2 left-2 sm:top-4 sm:left-4 z-20 px-2.5 py-1 bg-amber-400 text-amber-900 text-[8px] sm:text-[10px] font-black uppercase tracking-widest rounded-full shadow-md">
+                                            Demo varyant
+                                        </div>
                                         <button onClick={() => startFlow('template')} className="w-full h-full flex flex-col items-center justify-center text-center p-5 sm:p-10 bg-white border border-slate-200 rounded-[28px] sm:rounded-[48px] shadow-lg sm:shadow-xl hover:shadow-emerald-100/50 transition-all active:scale-[0.98] lg:hover:-translate-y-2 overflow-hidden">
                                             <div className="w-12 h-12 sm:w-20 sm:h-20 bg-emerald-50 rounded-[18px] sm:rounded-[28px] flex items-center justify-center mb-3 sm:mb-6 lg:group-hover:scale-110 transition-transform duration-500">
                                                 <FilePlus className="w-5 h-5 sm:w-8 sm:h-8 text-emerald-600" />
