@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { AnalysisResult } from '../../types';
 import { GradientCard, SectionLabel, StatusBadge, ScoreGauge } from './PremiumUI';
 import {
@@ -6,6 +6,20 @@ import {
     Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight, AlignJustify,
     List, ListOrdered, Undo2, Redo2, Type, Palette, ShieldAlert, ChevronRight
 } from 'lucide-react';
+
+// ToolbarBtn va Sep — komponent tashqarisida aniqlangan, har renderda qayta yaratilmaydi
+const ToolbarBtn = React.memo(({ children, command, arg, active = false }: { children: React.ReactNode; command?: string; arg?: string; active?: boolean }) => (
+    <button
+        onMouseDown={command ? (e: React.MouseEvent) => { e.preventDefault(); document.execCommand(command, false, arg); } : undefined}
+        className={`w-7 h-7 flex items-center justify-center rounded hover:bg-blue-50 transition-colors ${active ? 'bg-blue-100 text-blue-700' : 'text-slate-500'}`}
+        title={command}
+        type="button"
+    >
+        {children}
+    </button>
+));
+
+const Sep = React.memo(() => <div className="w-px h-5 bg-slate-200 mx-1" />);
 
 interface ResultsTemplateProps {
     result: AnalysisResult;
@@ -28,41 +42,22 @@ export const ResultsTemplate: React.FC<ResultsTemplateProps> = ({ result, templa
     const [pageBg, setPageBg] = useState('#ffffff');
     const template = propTemplate || internalTemplate;
 
-    const updateTemplate = (field: string, value: string) => {
+    // Debounced update — faqat onBlur da chaqiriladi, har execCommand da EMAS
+    const updateTemplate = useCallback((field: string, value: string) => {
         const newTemplate = { ...template, [field]: value };
         if (onTemplateChange) {
             onTemplateChange(newTemplate);
         } else {
             setInternalTemplate(newTemplate);
         }
-    };
+    }, [template, onTemplateChange]);
 
-
-    const handleCopy = () => {
+    const handleCopy = useCallback(() => {
         const text = `${template.header}\n\n${template.title}\n\n${template.body}\n\n${template.footer}`;
         navigator.clipboard.writeText(text);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
-    };
-
-    const handleCommand = (command: string, arg?: string) => (e: React.MouseEvent) => {
-        e.preventDefault(); // Matn fokusini yo'qotmaslik uchun
-        document.execCommand(command, false, arg);
-    };
-
-    const ToolbarBtn = ({ children, command, arg, active = false }: { children: React.ReactNode; command?: string; arg?: string; active?: boolean }) => (
-        <button
-            onMouseDown={command ? handleCommand(command, arg) : undefined}
-            className={`w-7 h-7 flex items-center justify-center rounded hover:bg-blue-50 transition-colors ${active ? 'bg-blue-100 text-blue-700' : 'text-slate-500'}`}
-            title={command}
-            type="button"
-        >
-            {children}
-        </button>
-    );
-
-    // Toolbar separator
-    const Sep = () => <div className="w-px h-5 bg-slate-200 mx-1" />;
+    }, [template]);
 
     // Ruler component
     const Ruler = () => (
@@ -353,11 +348,10 @@ export const ResultsTemplate: React.FC<ResultsTemplateProps> = ({ result, templa
                                 <div
                                     contentEditable
                                     suppressContentEditableWarning
-                                    onInput={(e) => updateTemplate('header', e.currentTarget.innerText)}
+                                    onBlur={(e) => updateTemplate('header', e.currentTarget.innerText)}
                                     className="w-full max-w-[320px] text-left text-[14px] leading-relaxed font-bold outline-none focus:bg-blue-50/40 p-1.5 rounded transition-colors whitespace-pre-wrap"
-                                >
-                                    {template.header}
-                                </div>
+                                    dangerouslySetInnerHTML={{ __html: template.header?.replace?.(/\n/g, '<br>') || template.header }}
+                                />
                             </div>
 
                             {/* Title */}
@@ -365,22 +359,20 @@ export const ResultsTemplate: React.FC<ResultsTemplateProps> = ({ result, templa
                                 <h1
                                     contentEditable
                                     suppressContentEditableWarning
-                                    onInput={(e) => updateTemplate('title', e.currentTarget.innerText)}
+                                    onBlur={(e) => updateTemplate('title', e.currentTarget.innerText)}
                                     className="text-xl font-black uppercase tracking-[0.15em] outline-none focus:bg-blue-50/40 p-1.5 rounded transition-colors whitespace-pre-wrap"
-                                >
-                                    {template.title}
-                                </h1>
+                                    dangerouslySetInnerHTML={{ __html: template.title }}
+                                />
                             </div>
 
                             {/* Body */}
                             <div
                                 contentEditable
                                 suppressContentEditableWarning
-                                onInput={(e) => updateTemplate('body', e.currentTarget.innerText)}
+                                onBlur={(e) => updateTemplate('body', e.currentTarget.innerText)}
                                 className="flex-grow text-[16px] leading-[1.8] text-justify whitespace-pre-wrap mb-16 indent-12 outline-none focus:bg-blue-50/40 p-2 rounded transition-colors"
-                            >
-                                {template.body}
-                            </div>
+                                dangerouslySetInnerHTML={{ __html: template.body?.replace?.(/\n/g, '<br>') || template.body }}
+                            />
 
                             {/* Footer / Signature */}
                             <div className="mt-auto pt-10 border-t border-slate-100 flex justify-between items-end">
@@ -389,11 +381,10 @@ export const ResultsTemplate: React.FC<ResultsTemplateProps> = ({ result, templa
                                     <span
                                         contentEditable
                                         suppressContentEditableWarning
-                                        onInput={(e) => updateTemplate('footer', e.currentTarget.innerText)}
+                                        onBlur={(e) => updateTemplate('footer', e.currentTarget.innerText)}
                                         className="font-bold border-b border-dashed border-slate-400 pb-1 outline-none focus:border-blue-400"
-                                    >
-                                        {template.footer}
-                                    </span>
+                                        dangerouslySetInnerHTML={{ __html: template.footer }}
+                                    />
                                 </div>
                                 <div className="text-right">
                                     <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 block mb-1">Imzo</span>
