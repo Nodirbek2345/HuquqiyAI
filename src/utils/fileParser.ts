@@ -1,9 +1,28 @@
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// AdolatAI — File Parser (Dynamic Import)
+// pdf.js va mammoth faqat kerak bo'lganda yuklanadi
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-declare global {
-    interface Window {
-        pdfjsLib: any;
-        mammoth: any;
+// Lazy-loaded modullar
+let pdfjsLib: typeof import('pdfjs-dist') | null = null;
+let mammothLib: typeof import('mammoth') | null = null;
+
+async function loadPdfJs() {
+    if (!pdfjsLib) {
+        pdfjsLib = await import('pdfjs-dist');
+        pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+            'pdfjs-dist/build/pdf.worker.mjs',
+            import.meta.url
+        ).toString();
     }
+    return pdfjsLib;
+}
+
+async function loadMammoth() {
+    if (!mammothLib) {
+        mammothLib = await import('mammoth');
+    }
+    return mammothLib;
 }
 
 export const extractTextFromFile = async (file: File): Promise<string> => {
@@ -12,7 +31,7 @@ export const extractTextFromFile = async (file: File): Promise<string> => {
     const fileType = file.type;
     const fileName = file.name.toLowerCase();
 
-    // PDF — o'z ichida barcha xatolarni (parol, skanerlangan va h.k.) hal qiladi
+    // PDF
     if (fileType === 'application/pdf' || fileName.endsWith('.pdf')) {
         return await parsePDF(file);
     }
@@ -61,20 +80,15 @@ const decodeBase64IfNeeded = (text: string): string => {
  */
 const isPasswordError = (error: any): boolean => {
     if (!error) return false;
-    // pdf.js 3.x: error.name === 'PasswordException'
     if (error.name === 'PasswordException') return true;
-    // pdf.js ba'zi versiyalarida: error.code === 1 (NEED_PASSWORD) yoki 2 (INCORRECT_PASSWORD)
     if (error.code === 1 || error.code === 2) return true;
-    // Umumiy string tekshiruv
     const msg = String(error.message || error || '').toLowerCase();
     if (msg.includes('password') || msg.includes('encrypted') || msg.includes('need a password')) return true;
     return false;
 };
 
 const parsePDF = async (file: File, password?: string): Promise<string> => {
-    if (!window.pdfjsLib) {
-        throw new Error("PDF kutubxonasi yuklanmagan. Iltimos, sahifani yangilang.");
-    }
+    const pdfjs = await loadPdfJs();
 
     const arrayBuffer = await file.arrayBuffer();
     const loadingParams: any = { data: new Uint8Array(arrayBuffer) };
@@ -85,14 +99,13 @@ const parsePDF = async (file: File, password?: string): Promise<string> => {
 
     let pdf: any;
     try {
-        pdf = await window.pdfjsLib.getDocument(loadingParams).promise;
+        pdf = await pdfjs.getDocument(loadingParams).promise;
     } catch (error: any) {
         console.error("PDF loading error:", error, "name:", error?.name, "code:", error?.code);
 
         // --- Parol bilan himoyalangan PDF ---
         if (isPasswordError(error)) {
             if (password) {
-                // Parol kiritilgan lekin noto'g'ri
                 const retryPassword = window.prompt(
                     "❌ Kiritilgan parol noto'g'ri!\n\nIltimos, to'g'ri parolni qayta kiriting:"
                 );
@@ -102,7 +115,6 @@ const parsePDF = async (file: File, password?: string): Promise<string> => {
                 return parsePDF(file, retryPassword);
             }
 
-            // Birinchi marta — parol so'rash
             const userPassword = window.prompt(
                 "🔒 Bu PDF fayl parol bilan himoyalangan.\n\nIltimos, faylning parolini kiriting:"
             );
@@ -114,7 +126,6 @@ const parsePDF = async (file: File, password?: string): Promise<string> => {
             return parsePDF(file, userPassword);
         }
 
-        // Boshqa xato
         throw new Error(`PDF faylni ochishda xatolik: ${error.message || error}`);
     }
 
@@ -143,12 +154,10 @@ const parsePDF = async (file: File, password?: string): Promise<string> => {
 };
 
 const parseDOCX = async (file: File): Promise<string> => {
-    if (!window.mammoth) {
-        throw new Error("DOCX kutubxonasi yuklanmagan. Iltimos, sahifani yangilang.");
-    }
+    const mammoth = await loadMammoth();
 
     const arrayBuffer = await file.arrayBuffer();
-    const result = await window.mammoth.extractRawText({ arrayBuffer });
+    const result = await mammoth.extractRawText({ arrayBuffer });
 
     if (result.messages.length > 0) {
         console.warn("Mammoth warnings:", result.messages);

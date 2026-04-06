@@ -1,16 +1,28 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { AdminLayout } from './layout/AdminLayout';
-import { Dashboard } from './pages/Dashboard';
-import { AIControlCenter } from './pages/AIControlCenter';
-import { AuditLogs } from './pages/AuditLogs';
 import { AdminLogin } from './pages/Login';
-import { AnalysisMonitor } from './pages/AnalysisMonitor';
-import { KazusMonitor } from './pages/KazusMonitor';
-import { RejectedMonitor } from './pages/RejectedMonitor';
-import { TemplatesManager } from './pages/TemplatesManager';
-import { UsersManager } from './pages/UsersManager';
-import { SecurityControl } from './pages/SecurityControl';
 import { validateToken, adminLogout, setAuthData } from '../services/adminApi';
+
+// ━━━ Lazy-loaded sahifalar (faqat tanlanganda yuklanadi) ━━━
+const Dashboard = lazy(() => import('./pages/Dashboard').then(m => ({ default: m.Dashboard })));
+const AIControlCenter = lazy(() => import('./pages/AIControlCenter').then(m => ({ default: m.AIControlCenter })));
+const AuditLogs = lazy(() => import('./pages/AuditLogs').then(m => ({ default: m.AuditLogs })));
+const AnalysisMonitor = lazy(() => import('./pages/AnalysisMonitor').then(m => ({ default: m.AnalysisMonitor })));
+const KazusMonitor = lazy(() => import('./pages/KazusMonitor').then(m => ({ default: m.KazusMonitor })));
+const RejectedMonitor = lazy(() => import('./pages/RejectedMonitor').then(m => ({ default: m.RejectedMonitor })));
+const TemplatesManager = lazy(() => import('./pages/TemplatesManager').then(m => ({ default: m.TemplatesManager })));
+const UsersManager = lazy(() => import('./pages/UsersManager').then(m => ({ default: m.UsersManager })));
+const SecurityControl = lazy(() => import('./pages/SecurityControl').then(m => ({ default: m.SecurityControl })));
+
+// Sahifa yuklanish indikatori
+const PageLoader = () => (
+    <div className="flex items-center justify-center py-20">
+        <div className="flex flex-col items-center gap-3">
+            <div className="w-8 h-8 border-3 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Yuklanmoqda...</p>
+        </div>
+    </div>
+);
 
 export const AdminApp: React.FC = () => {
     const [activePage, _setActivePage] = useState(localStorage.getItem('admin_active_page') || 'dashboard');
@@ -22,7 +34,6 @@ export const AdminApp: React.FC = () => {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        // Validate token on mount
         const checkAuth = async () => {
             const admin = await validateToken();
             setIsAuthenticated(!!admin);
@@ -42,7 +53,6 @@ export const AdminApp: React.FC = () => {
         window.location.reload();
     };
 
-    // Show loading while checking auth
     if (isLoading) {
         return (
             <div className="min-h-screen bg-slate-900 flex items-center justify-center">
@@ -66,14 +76,15 @@ export const AdminApp: React.FC = () => {
             case 'audit': return <AuditLogs />;
             case 'users': return <UsersManager />;
             case 'security': return <SecurityControl />;
-
             default: return <Dashboard />;
         }
     };
 
     return (
         <AdminLayout activePage={activePage} onNavigate={setActivePage} onLogout={handleLogout}>
-            {renderContent()}
+            <Suspense fallback={<PageLoader />}>
+                {renderContent()}
+            </Suspense>
         </AdminLayout>
     );
 };

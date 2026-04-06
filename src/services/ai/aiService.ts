@@ -5,9 +5,12 @@
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 import { AnalysisResult, ChatSession, AnalysisMode } from "../../types"
-import { LocalRulesProvider } from "./providers/localRules";
-import { GeminiProvider } from "./providers/gemini";
-import { callOpenAI } from "./providers/openai";
+
+// ━━━ DYNAMIC IMPORTS ━━━
+// GeminiProvider, callOpenAI, LocalRulesProvider
+// faqat backend ishlamaganda yuklanadi (fallback)
+// Bu openai (~300KB) va @google/genai paketlarini
+// asosiy bundle dan chiqaradi
 
 const API_URL = import.meta.env.VITE_API_URL || '';
 
@@ -38,10 +41,8 @@ export async function analyzeDocument(
         }
 
         const result = await response.json();
-        // TransformInterceptor wraps in { success, data }
         const data = result.data || result;
 
-        // Normalize for frontend
         const parsed = normalizeResult(data);
         console.log(`[AdolatAI] ━━━ Analysis Complete ━━━ Issues: ${parsed.totalIssuesCount}, Risk: ${parsed.riskScore}`);
         return parsed;
@@ -54,8 +55,8 @@ export async function analyzeDocument(
             throw new Error("AI Xizmatlari Limiti Tugadi: Iltimos, 1 daqiqa kuting yoki hisobingizni tekshiring.");
         }
 
-        // Backend ishlamasa (fetch error), mahalliy tahlilga o'tish
-        console.warn("[AdolatAI] ⚠️ Backend ishlamayapti. Muqobil (Gemini/Groq/Local) variantlar ishga tushirildi.");
+        // Backend ishlamasa, mahalliy tahlilga o'tish
+        console.warn("[AdolatAI] ⚠️ Backend ishlamayapti. Muqobil variantlar ishga tushirildi.");
 
         // Admin sozlamalarini yuklash (agar imkon bo'lsa)
         let providerSettings = { geminiEnabled: true, groqEnabled: true, openaiEnabled: false };
@@ -71,6 +72,8 @@ export async function analyzeDocument(
         if (providerSettings.geminiEnabled !== false) {
             try {
                 console.log("[AdolatAI] 🔄 Gemini orqali tahlil qilinmoqda...");
+                // Dynamic import — faqat kerak bo'lganda yuklanadi
+                const { GeminiProvider } = await import("./providers/gemini");
                 const geminiProvider = new GeminiProvider();
                 const geminiResult = await geminiProvider.analyzeDocument(text, mode);
                 return geminiResult;
@@ -85,6 +88,8 @@ export async function analyzeDocument(
         if (providerSettings.groqEnabled !== false || providerSettings.openaiEnabled !== false) {
             try {
                 console.log("[AdolatAI] 🔄 Groq/OpenAI orqali tahlil qilinmoqda...");
+                // Dynamic import — faqat kerak bo'lganda yuklanadi
+                const { callOpenAI } = await import("./providers/openai");
                 const rawJson = await callOpenAI(text, mode);
                 const parsed = JSON.parse(rawJson);
                 const normalized = normalizeResult(parsed);
@@ -102,10 +107,11 @@ export async function analyzeDocument(
         // 3. Local fallback (agar hammasi ishlamasa)
         try {
             console.log("[AdolatAI] 🔄 Mahalliy qoidalar orqali tahlil qilinmoqda...");
+            // Dynamic import — faqat kerak bo'lganda yuklanadi
+            const { LocalRulesProvider } = await import("./providers/localRules");
             const localProvider = new LocalRulesProvider();
             const localResult = await localProvider.analyzeDocument(text, mode);
 
-            // Mahalliy ekanligini bildirish uchun
             localResult.analysisLevel = "LOCAL";
             localResult.confidenceReason = "Backend serverga ulanib bo'lmadi (Offline Mode)";
 
@@ -187,6 +193,8 @@ export async function createDocumentChat(context: string): Promise<ChatSession> 
 
                 try {
                     if (!geminiSession) {
+                        // Dynamic import — faqat kerak bo'lganda yuklanadi
+                        const { GeminiProvider } = await import("./providers/gemini");
                         const geminiProvider = new GeminiProvider();
                         geminiSession = await geminiProvider.createChat(context);
                     }

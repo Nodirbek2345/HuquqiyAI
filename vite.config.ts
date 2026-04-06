@@ -21,8 +21,13 @@ export default defineConfig(({ mode }) => {
         output: {
           manualChunks(id) {
             if (id.includes('node_modules')) {
-              if (id.includes('recharts')) return 'vendor_recharts';
+              // Heavy libraries — alohida lazy chunk
+              if (id.includes('pdfjs-dist')) return 'vendor_pdf';
+              if (id.includes('mammoth')) return 'vendor_mammoth';
+              if (id.includes('openai')) return 'vendor_openai';
+              if (id.includes('@google/genai')) return 'vendor_genai';
               if (id.includes('lucide-react')) return 'vendor_icons';
+              if (id.includes('docx') || id.includes('jspdf')) return 'vendor_docs';
               return 'vendor';
             }
           }
