@@ -21,6 +21,7 @@ export const UsersManager: React.FC = () => {
     const [saving, setSaving] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [platformUsers, setPlatformUsers] = useState<PlatformUser[]>([]);
+    const [platformLoading, setPlatformLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<'admin' | 'platform'>('platform');
 
     useEffect(() => {
@@ -29,8 +30,13 @@ export const UsersManager: React.FC = () => {
     }, []);
 
     const loadPlatformUsers = async () => {
-        const list = await getPlatformUsersList();
-        setPlatformUsers(list);
+        setPlatformLoading(true);
+        try {
+            const list = await getPlatformUsersList();
+            setPlatformUsers(list);
+        } finally {
+            setPlatformLoading(false);
+        }
     };
 
     const fetchUsers = async () => {
@@ -139,7 +145,9 @@ export const UsersManager: React.FC = () => {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100">
-                            {platformUsers.length === 0 ? (
+                            {platformLoading ? (
+                                <tr><td colSpan={7} className="text-center py-10"><Loader2 className="w-8 h-8 animate-spin mx-auto text-blue-500" /></td></tr>
+                            ) : platformUsers.length === 0 ? (
                                 <tr><td colSpan={7} className="text-center py-10 text-slate-500">Hali hech kim ro'yxatdan o'tmagan</td></tr>
                             ) : (
                                 platformUsers.map((pu) => (

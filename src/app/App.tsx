@@ -125,7 +125,7 @@ const App: React.FC = () => {
         );
     }
 
-    const startFlow = async (mode: AnalysisMode) => {
+    const startFlow = (mode: AnalysisMode) => {
         // 1) Tekshirish: foydalanuvchi ro'yxatdan o'tganmi?
         const user = getPlatformUser();
         if (!user) {
@@ -134,23 +134,7 @@ const App: React.FC = () => {
             return;
         }
 
-        // 2) Statusni backend bilan sinxronizatsiya qilish
-        try {
-            const API_BASE_URL = import.meta.env.VITE_API_URL || '';
-            const response = await fetch(`${API_BASE_URL}/api/users/check?email=${encodeURIComponent(user.email)}`);
-
-            if (response.ok) {
-                const dbData = await response.json();
-                if (dbData && dbData.user) {
-                    user.status = dbData.user.status;
-                    localStorage.setItem(STORAGE_KEYS.PLATFORM_USER, JSON.stringify(user));
-                }
-            }
-        } catch (e) {
-            console.error("Foydalanuvchi statusini tekshirishda xatolik", e);
-        }
-
-        // 3) Tasdiqlangan mi?
+        // 2) Tasdiqlangan mi? (Lokal xotira bo'yicha tezkor tekshirish)
         if (user.status === 'rejected') {
             setShowRejectedAlert(true);
             return;
@@ -159,7 +143,36 @@ const App: React.FC = () => {
             setShowPendingAlert(true);
             return;
         }
-        // 4) Tasdiqlangan — davom etish
+
+        // 3) Background'da statusni backend bilan sinxronizatsiya qilish (UI ni bloklamasdan)
+        const checkStatusAsync = async () => {
+            try {
+                const API_BASE_URL = import.meta.env.VITE_API_URL || '';
+                const response = await fetch(`${API_BASE_URL}/api/users/check?email=${encodeURIComponent(user.email)}`);
+
+                if (response.ok) {
+                    const dbData = await response.json();
+                    if (dbData && dbData.user && dbData.user.status !== user.status) {
+                        user.status = dbData.user.status;
+                        localStorage.setItem(STORAGE_KEYS.PLATFORM_USER, JSON.stringify(user));
+
+                        // Status orqa fonda o'zgarib qolsa
+                        if (user.status === 'rejected') {
+                            setShowRejectedAlert(true);
+                            setCurrentStep('upload');
+                        } else if (user.status === 'pending') {
+                            setShowPendingAlert(true);
+                            setCurrentStep('upload');
+                        }
+                    }
+                }
+            } catch (e) {
+                console.error("Foydalanuvchi statusini tekshirishda xatolik", e);
+            }
+        };
+        checkStatusAsync();
+
+        // 4) Tasdiqlangan — davom etish (darhol)
         setAnalysisMode(mode);
         setCurrentStep('disclaimer');
     };
