@@ -19,8 +19,8 @@ export const GradientCard = ({
 }) => (
     <div className={`bg-white/80 backdrop-blur-xl border border-white/20 shadow-xl rounded-[32px] overflow-hidden transition-all hover:shadow-2xl hover:bg-white/90 ${className}`}>
         {(title || Icon) && (
-            <div className="px-8 py-6 border-b border-slate-100/50 flex justify-between items-center bg-gradient-to-r from-white/50 to-transparent">
-                <div className="flex items-center gap-4">
+            <div className="px-5 py-4 md:px-8 md:py-6 border-b border-slate-100/50 flex justify-between items-center bg-gradient-to-r from-white/50 to-transparent">
+                <div className="flex items-center gap-3 md:gap-4">
                     {Icon && (
                         <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center text-slate-600 shadow-inner">
                             <Icon className="w-6 h-6" />
@@ -31,7 +31,7 @@ export const GradientCard = ({
                 {rightContent}
             </div>
         )}
-        <div className="p-10">
+        <div className="p-5 md:p-10">
             {children}
         </div>
     </div>

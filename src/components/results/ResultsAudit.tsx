@@ -61,7 +61,7 @@ export const ResultsAudit: React.FC<ResultsAuditProps> = ({ result }) => {
                     <SectionLabel>Aniqlangan Muammolar va Yechimlar</SectionLabel>
 
                     {result.issues.map((issue, idx) => (
-                        <div key={idx} className="bg-white rounded-[32px] p-10 border border-slate-100 shadow-sm hover:shadow-xl transition-all group duration-500">
+                        <div key={idx} className="bg-white rounded-3xl md:rounded-[32px] p-6 md:p-10 border border-slate-100 shadow-sm hover:shadow-xl transition-all group duration-500">
                             {/* Header */}
                             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                                 <div className="flex items-center gap-3">
@@ -80,12 +80,12 @@ export const ResultsAudit: React.FC<ResultsAuditProps> = ({ result }) => {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 {/* Left: Problem */}
                                 <div className="space-y-4">
-                                    <div className="p-8 bg-slate-50/50 rounded-3xl border border-slate-100">
+                                    <div className="p-5 md:p-8 bg-slate-50/50 rounded-2xl md:rounded-3xl border border-slate-100">
                                         <SectionLabel>Muammo Mohiyati</SectionLabel>
                                         <p className="text-lg font-bold text-slate-700 leading-relaxed">{issue.explanation}</p>
                                     </div>
 
-                                    <div className="p-8 bg-rose-50/30 rounded-3xl border border-rose-100/50">
+                                    <div className="p-5 md:p-8 bg-rose-50/30 rounded-2xl md:rounded-3xl border border-rose-100/50">
                                         <SectionLabel className="text-rose-400">Hujjatdagi Band</SectionLabel>
                                         <p className="text-base font-mono text-rose-800/80 italic">"{issue.clauseText}"</p>
                                     </div>
@@ -105,7 +105,7 @@ export const ResultsAudit: React.FC<ResultsAuditProps> = ({ result }) => {
 
                                 {/* Right: Solution */}
                                 <div className="space-y-6">
-                                    <div className="p-8 bg-emerald-50/30 rounded-3xl border border-emerald-100/50 h-full flex flex-col">
+                                    <div className="p-5 md:p-8 bg-emerald-50/30 rounded-2xl md:rounded-3xl border border-emerald-100/50 h-full flex flex-col">
                                         <SectionLabel className="text-emerald-500">Tavsiya va Yechim</SectionLabel>
                                         <p className="text-lg font-bold text-emerald-800 leading-relaxed mb-6">{issue.recommendation}</p>
 
