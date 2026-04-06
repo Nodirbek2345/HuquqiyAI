@@ -82,12 +82,12 @@ export const ResultsAudit: React.FC<ResultsAuditProps> = ({ result }) => {
                                 <div className="space-y-4">
                                     <div className="p-5 md:p-8 bg-slate-50/50 rounded-2xl md:rounded-3xl border border-slate-100">
                                         <SectionLabel>Muammo Mohiyati</SectionLabel>
-                                        <p className="text-lg font-bold text-slate-700 leading-relaxed">{issue.explanation}</p>
+                                        <p className="text-lg font-bold text-slate-700 leading-relaxed break-words">{issue.explanation}</p>
                                     </div>
 
                                     <div className="p-5 md:p-8 bg-rose-50/30 rounded-2xl md:rounded-3xl border border-rose-100/50">
                                         <SectionLabel className="text-rose-400">Hujjatdagi Band</SectionLabel>
-                                        <p className="text-base font-mono text-rose-800/80 italic">"{issue.clauseText}"</p>
+                                        <p className="text-base font-mono text-rose-800/80 italic break-words break-all whitespace-pre-wrap">"{issue.clauseText}"</p>
                                     </div>
 
                                     {issue.potentialConsequences && issue.potentialConsequences.length > 0 && (
@@ -112,7 +112,7 @@ export const ResultsAudit: React.FC<ResultsAuditProps> = ({ result }) => {
                                         {issue.improvedText && (
                                             <div className="mt-auto pt-5 border-t border-emerald-100/50">
                                                 <span className="text-sm uppercase font-black tracking-widest text-emerald-500 block mb-3">To'g'rilangan Matn</span>
-                                                <div className="bg-white/80 p-6 rounded-2xl text-base font-mono text-emerald-900 border border-emerald-100 shadow-sm leading-relaxed">
+                                                <div className="bg-white/80 p-6 rounded-2xl text-base font-mono text-emerald-900 border border-emerald-100 shadow-sm leading-relaxed break-words break-all whitespace-pre-wrap">
                                                     {issue.improvedText}
                                                 </div>
                                             </div>
