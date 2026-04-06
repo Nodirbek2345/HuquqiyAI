@@ -196,7 +196,7 @@ const ResultsDashboard: React.FC<ResultsDashboardProps> = ({ result, onReset, on
   };
 
   return (
-    <div className="w-full max-w-[1600px] mx-auto pb-16 px-4 animate-in fade-in duration-500 space-y-10">
+    <div className="w-full max-w-[1600px] max-w-full mx-auto pb-16 px-4 animate-in fade-in duration-500 space-y-10 overflow-hidden min-w-0">
       {/* Dynamic Header */}
       <header className="flex flex-col md:flex-row justify-between items-center gap-6 bg-white p-6 rounded-[32px] border border-slate-100 shadow-xl no-print">
         <div className="flex items-center gap-6">
