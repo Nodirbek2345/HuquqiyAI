@@ -60,6 +60,7 @@ const App: React.FC = () => {
     const [pendingMode, setPendingMode] = useState<AnalysisMode | null>(null);
     const [showPendingAlert, setShowPendingAlert] = useState(false);
     const [showRejectedAlert, setShowRejectedAlert] = useState(false);
+    const [showEslatma, setShowEslatma] = useState(() => !sessionStorage.getItem('adolat_eslatma_seen'));
 
     // LocalStorage dan tarix yuklash
     useEffect(() => {
@@ -520,6 +521,38 @@ const App: React.FC = () => {
                         localStorage.setItem('adolat_admin_token', 'valid_session_2026');
                     }}
                 />
+
+                {/* Eslatma Modal — platformaga kirganda chiqadi */}
+                {showEslatma && (
+                    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+                        <div className="bg-gradient-to-b from-blue-600 to-blue-700 rounded-3xl shadow-2xl w-full max-w-sm p-8 text-center animate-in fade-in zoom-in duration-300 relative">
+                            {/* Close button */}
+                            <button
+                                onClick={() => { setShowEslatma(false); sessionStorage.setItem('adolat_eslatma_seen', '1'); }}
+                                className="absolute top-4 right-4 w-7 h-7 flex items-center justify-center rounded-full bg-white/20 text-white/80 hover:bg-white/30 transition-all text-sm font-bold"
+                            >✕</button>
+
+                            {/* Icon */}
+                            <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-5">
+                                <Shield className="w-8 h-8 text-white" />
+                            </div>
+
+                            <h3 className="text-2xl font-black text-white mb-3">Eslatma!</h3>
+                            <p className="text-white/90 text-sm font-medium leading-relaxed mb-6">
+                                AdolatAI platformasi hozirda <strong className="text-white">test rejimida</strong> ishlamoqda!
+                            </p>
+
+                            <button
+                                onClick={() => { setShowEslatma(false); sessionStorage.setItem('adolat_eslatma_seen', '1'); }}
+                                className="w-full py-3.5 bg-white text-blue-700 font-black text-sm uppercase tracking-widest rounded-xl shadow-lg hover:bg-blue-50 transition-all active:scale-95"
+                            >
+                                Tushunarli
+                            </button>
+
+                            <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest mt-4">AdolatAI Platform</p>
+                        </div>
+                    </div>
+                )}
             </div>
         </ErrorBoundary>
     );
