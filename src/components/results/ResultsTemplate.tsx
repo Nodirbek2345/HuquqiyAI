@@ -22,6 +22,10 @@ export const ResultsTemplate: React.FC<ResultsTemplateProps> = ({ result, templa
     };
     const [internalTemplate, setInternalTemplate] = useState(result.generatedTemplate || defaultTemplate);
     const [copied, setCopied] = useState(false);
+    const [activeToolbarTab, setActiveToolbarTab] = useState<'Bosh sahifa' | "Qo'shish" | 'Sahifa'>('Bosh sahifa');
+    const [pagePadding, setPagePadding] = useState('64px');
+    const [pageOrientation, setPageOrientation] = useState<'portrait' | 'landscape'>('portrait');
+    const [pageBg, setPageBg] = useState('#ffffff');
     const template = propTemplate || internalTemplate;
 
     const updateTemplate = (field: string, value: string) => {
@@ -126,58 +130,209 @@ export const ResultsTemplate: React.FC<ResultsTemplateProps> = ({ result, templa
                     <div className="bg-[#f3f3f3] border-b border-slate-200">
                         {/* Tab bar */}
                         <div className="flex items-center gap-0 px-2 pt-1.5">
-                            <div className="px-4 py-1.5 text-[11px] font-bold text-slate-800 bg-white border-t-2 border-t-blue-500 border-x border-slate-200 rounded-t-md">Bosh sahifa</div>
-                            <div className="px-4 py-1.5 text-[11px] font-medium text-slate-400 hover:text-slate-600 cursor-pointer transition-colors">Qo'shish</div>
-                            <div className="px-4 py-1.5 text-[11px] font-medium text-slate-400 hover:text-slate-600 cursor-pointer transition-colors">Sahifa</div>
+                            {(['Bosh sahifa', "Qo'shish", 'Sahifa'] as const).map(tab => (
+                                <div
+                                    key={tab}
+                                    onClick={() => setActiveToolbarTab(tab)}
+                                    className={`px-4 py-1.5 text-[11px] font-medium cursor-pointer transition-colors select-none ${activeToolbarTab === tab
+                                        ? 'font-bold text-slate-800 bg-white border-t-2 border-t-blue-500 border-x border-slate-200 rounded-t-md'
+                                        : 'text-slate-400 hover:text-slate-600'
+                                        }`}
+                                >{tab}</div>
+                            ))}
                         </div>
-                        {/* Tool buttons */}
-                        <div className="flex items-center gap-0.5 px-3 py-1.5 bg-white border-t border-slate-100 flex-wrap">
-                            <ToolbarBtn command="undo"><Undo2 className="w-3.5 h-3.5" /></ToolbarBtn>
-                            <ToolbarBtn command="redo"><Redo2 className="w-3.5 h-3.5" /></ToolbarBtn>
-                            <Sep />
-                            {/* Font selector */}
-                            <select
-                                onChange={(e) => { document.execCommand('fontName', false, e.target.value); }}
-                                className="flex items-center gap-1 px-2 py-1 border border-slate-200 rounded text-[11px] font-medium text-slate-700 bg-white min-w-[120px] outline-none cursor-pointer hover:bg-slate-50 transition-colors"
-                            >
-                                <option value="Times New Roman">Times New Roman</option>
-                                <option value="Arial">Arial</option>
-                                <option value="Courier New">Courier New</option>
-                                <option value="Georgia">Georgia</option>
-                            </select>
-                            <select
-                                onChange={(e) => { document.execCommand('fontSize', false, e.target.value); }}
-                                defaultValue="4"
-                                className="flex items-center gap-1 px-2 py-1 border border-slate-200 rounded text-[11px] font-medium text-slate-700 bg-white w-[55px] justify-center ml-1 outline-none cursor-pointer hover:bg-slate-50 transition-colors"
-                            >
-                                <option value="3">12</option>
-                                <option value="4">14</option>
-                                <option value="5">18</option>
-                                <option value="6">24</option>
-                                <option value="7">36</option>
-                            </select>
-                            <Sep />
-                            <ToolbarBtn command="bold"><Bold className="w-3.5 h-3.5" /></ToolbarBtn>
-                            <ToolbarBtn command="italic"><Italic className="w-3.5 h-3.5" /></ToolbarBtn>
-                            <ToolbarBtn command="underline"><Underline className="w-3.5 h-3.5" /></ToolbarBtn>
-                            <Sep />
-                            <ToolbarBtn command="justifyLeft"><AlignLeft className="w-3.5 h-3.5" /></ToolbarBtn>
-                            <ToolbarBtn command="justifyCenter"><AlignCenter className="w-3.5 h-3.5" /></ToolbarBtn>
-                            <ToolbarBtn command="justifyRight"><AlignRight className="w-3.5 h-3.5" /></ToolbarBtn>
-                            <ToolbarBtn command="justifyFull"><AlignJustify className="w-3.5 h-3.5" /></ToolbarBtn>
-                            <Sep />
-                            <ToolbarBtn command="insertUnorderedList"><List className="w-3.5 h-3.5" /></ToolbarBtn>
-                            <ToolbarBtn command="insertOrderedList"><ListOrdered className="w-3.5 h-3.5" /></ToolbarBtn>
-                            <Sep />
-                            <label title="Text Color" className="w-7 h-7 flex items-center justify-center rounded hover:bg-blue-50 transition-colors text-slate-500 cursor-pointer overflow-hidden relative">
-                                <Palette className="w-3.5 h-3.5 pointer-events-none" />
-                                <input
-                                    type="color"
-                                    onChange={(e) => document.execCommand('foreColor', false, e.target.value)}
-                                    className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
-                                />
-                            </label>
-                        </div>
+
+                        {/* — Bosh sahifa tab: Formatlash asboblari — */}
+                        {activeToolbarTab === 'Bosh sahifa' && (
+                            <div className="flex items-center gap-0.5 px-3 py-1.5 bg-white border-t border-slate-100 flex-wrap">
+                                <ToolbarBtn command="undo"><Undo2 className="w-3.5 h-3.5" /></ToolbarBtn>
+                                <ToolbarBtn command="redo"><Redo2 className="w-3.5 h-3.5" /></ToolbarBtn>
+                                <Sep />
+                                <select
+                                    onChange={(e) => { document.execCommand('fontName', false, e.target.value); }}
+                                    className="flex items-center gap-1 px-2 py-1 border border-slate-200 rounded text-[11px] font-medium text-slate-700 bg-white min-w-[120px] outline-none cursor-pointer hover:bg-slate-50 transition-colors"
+                                >
+                                    <option value="Times New Roman">Times New Roman</option>
+                                    <option value="Arial">Arial</option>
+                                    <option value="Courier New">Courier New</option>
+                                    <option value="Georgia">Georgia</option>
+                                </select>
+                                <select
+                                    onChange={(e) => { document.execCommand('fontSize', false, e.target.value); }}
+                                    defaultValue="4"
+                                    className="flex items-center gap-1 px-2 py-1 border border-slate-200 rounded text-[11px] font-medium text-slate-700 bg-white w-[55px] justify-center ml-1 outline-none cursor-pointer hover:bg-slate-50 transition-colors"
+                                >
+                                    <option value="1">8</option>
+                                    <option value="2">10</option>
+                                    <option value="3">12</option>
+                                    <option value="4">14</option>
+                                    <option value="5">18</option>
+                                    <option value="6">24</option>
+                                    <option value="7">36</option>
+                                </select>
+                                <Sep />
+                                <ToolbarBtn command="bold"><Bold className="w-3.5 h-3.5" /></ToolbarBtn>
+                                <ToolbarBtn command="italic"><Italic className="w-3.5 h-3.5" /></ToolbarBtn>
+                                <ToolbarBtn command="underline"><Underline className="w-3.5 h-3.5" /></ToolbarBtn>
+                                <ToolbarBtn command="strikethrough"><Type className="w-3.5 h-3.5" /></ToolbarBtn>
+                                <Sep />
+                                <ToolbarBtn command="justifyLeft"><AlignLeft className="w-3.5 h-3.5" /></ToolbarBtn>
+                                <ToolbarBtn command="justifyCenter"><AlignCenter className="w-3.5 h-3.5" /></ToolbarBtn>
+                                <ToolbarBtn command="justifyRight"><AlignRight className="w-3.5 h-3.5" /></ToolbarBtn>
+                                <ToolbarBtn command="justifyFull"><AlignJustify className="w-3.5 h-3.5" /></ToolbarBtn>
+                                <Sep />
+                                <ToolbarBtn command="insertUnorderedList"><List className="w-3.5 h-3.5" /></ToolbarBtn>
+                                <ToolbarBtn command="insertOrderedList"><ListOrdered className="w-3.5 h-3.5" /></ToolbarBtn>
+                                <Sep />
+                                <label title="Matn rangi" className="w-7 h-7 flex items-center justify-center rounded hover:bg-blue-50 transition-colors text-slate-500 cursor-pointer overflow-hidden relative">
+                                    <Palette className="w-3.5 h-3.5 pointer-events-none" />
+                                    <input
+                                        type="color"
+                                        onChange={(e) => document.execCommand('foreColor', false, e.target.value)}
+                                        className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                                    />
+                                </label>
+                                <label title="Orqa fon rangi" className="w-7 h-7 flex items-center justify-center rounded hover:bg-blue-50 transition-colors text-slate-500 cursor-pointer overflow-hidden relative">
+                                    <span className="text-[10px] font-black pointer-events-none">A</span>
+                                    <input
+                                        type="color"
+                                        defaultValue="#ffff00"
+                                        onChange={(e) => document.execCommand('hiliteColor', false, e.target.value)}
+                                        className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                                    />
+                                </label>
+                            </div>
+                        )}
+
+                        {/* — Qo'shish tab: Qo'shish asboblari — */}
+                        {activeToolbarTab === "Qo'shish" && (
+                            <div className="flex items-center gap-1 px-3 py-1.5 bg-white border-t border-slate-100 flex-wrap">
+                                <button
+                                    onMouseDown={(e) => { e.preventDefault(); document.execCommand('insertHorizontalRule'); }}
+                                    className="px-3 py-1 text-[11px] font-medium text-slate-600 rounded hover:bg-blue-50 hover:text-blue-700 transition-colors flex items-center gap-1.5"
+                                    title="Gorizontal chiziq qo'shish"
+                                >
+                                    <span className="w-4 h-px bg-current inline-block" /> Chiziq
+                                </button>
+                                <Sep />
+                                <button
+                                    onMouseDown={(e) => {
+                                        e.preventDefault();
+                                        const url = prompt("Havola URL manzilini kiriting:", "https://");
+                                        if (url) {
+                                            const text = window.getSelection()?.toString() || url;
+                                            document.execCommand('insertHTML', false, `<a href="${url}" target="_blank" style="color:#2563eb;text-decoration:underline">${text}</a>`);
+                                        }
+                                    }}
+                                    className="px-3 py-1 text-[11px] font-medium text-slate-600 rounded hover:bg-blue-50 hover:text-blue-700 transition-colors flex items-center gap-1.5"
+                                    title="Havola qo'shish"
+                                >
+                                    🔗 Havola
+                                </button>
+                                <Sep />
+                                <button
+                                    onMouseDown={(e) => {
+                                        e.preventDefault();
+                                        const url = prompt("Rasm URL manzilini kiriting:", "https://");
+                                        if (url) document.execCommand('insertImage', false, url);
+                                    }}
+                                    className="px-3 py-1 text-[11px] font-medium text-slate-600 rounded hover:bg-blue-50 hover:text-blue-700 transition-colors flex items-center gap-1.5"
+                                    title="Rasm qo'shish"
+                                >
+                                    🖼️ Rasm
+                                </button>
+                                <Sep />
+                                <button
+                                    onMouseDown={(e) => {
+                                        e.preventDefault();
+                                        const rows = prompt("Qatorlar soni:", "3");
+                                        const cols = prompt("Ustunlar soni:", "3");
+                                        if (rows && cols) {
+                                            let table = '<table style="border-collapse:collapse;width:100%;margin:12px 0">';
+                                            for (let r = 0; r < parseInt(rows); r++) {
+                                                table += '<tr>';
+                                                for (let c = 0; c < parseInt(cols); c++) {
+                                                    table += `<td style="border:1px solid #cbd5e1;padding:8px;min-width:60px">&nbsp;</td>`;
+                                                }
+                                                table += '</tr>';
+                                            }
+                                            table += '</table>';
+                                            document.execCommand('insertHTML', false, table);
+                                        }
+                                    }}
+                                    className="px-3 py-1 text-[11px] font-medium text-slate-600 rounded hover:bg-blue-50 hover:text-blue-700 transition-colors flex items-center gap-1.5"
+                                    title="Jadval qo'shish"
+                                >
+                                    📊 Jadval
+                                </button>
+                                <Sep />
+                                <button
+                                    onMouseDown={(e) => {
+                                        e.preventDefault();
+                                        const today = new Date().toLocaleDateString('uz-UZ', { year: 'numeric', month: 'long', day: 'numeric' });
+                                        document.execCommand('insertText', false, today);
+                                    }}
+                                    className="px-3 py-1 text-[11px] font-medium text-slate-600 rounded hover:bg-blue-50 hover:text-blue-700 transition-colors flex items-center gap-1.5"
+                                    title="Sanani qo'shish"
+                                >
+                                    📅 Sana
+                                </button>
+                                <Sep />
+                                <button
+                                    onMouseDown={(e) => {
+                                        e.preventDefault();
+                                        document.execCommand('insertHTML', false, '<div style="page-break-after:always;border-bottom:2px dashed #94a3b8;margin:24px 0;padding:4px 0;text-align:center;color:#94a3b8;font-size:10px">— sahifa uzilishi —</div>');
+                                    }}
+                                    className="px-3 py-1 text-[11px] font-medium text-slate-600 rounded hover:bg-blue-50 hover:text-blue-700 transition-colors flex items-center gap-1.5"
+                                    title="Sahifa uzilishi"
+                                >
+                                    📄 Sahifa uzilishi
+                                </button>
+                            </div>
+                        )}
+
+                        {/* — Sahifa tab: Sahifa sozlamalari — */}
+                        {activeToolbarTab === 'Sahifa' && (
+                            <div className="flex items-center gap-1 px-3 py-1.5 bg-white border-t border-slate-100 flex-wrap">
+                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mr-1">Chegaralar:</span>
+                                {([
+                                    { label: 'Keng', val: '96px' },
+                                    { label: "O'rta", val: '64px' },
+                                    { label: 'Tor', val: '32px' },
+                                ] as const).map(m => (
+                                    <button
+                                        key={m.label}
+                                        onClick={() => setPagePadding(m.val)}
+                                        className={`px-3 py-1 text-[11px] font-medium rounded transition-colors ${pagePadding === m.val ? 'bg-blue-100 text-blue-700 font-bold' : 'text-slate-600 hover:bg-blue-50'}`}
+                                    >{m.label}</button>
+                                ))}
+                                <Sep />
+                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mr-1">Yo'nalish:</span>
+                                <button
+                                    onClick={() => setPageOrientation('portrait')}
+                                    className={`px-3 py-1 text-[11px] font-medium rounded transition-colors ${pageOrientation === 'portrait' ? 'bg-blue-100 text-blue-700 font-bold' : 'text-slate-600 hover:bg-blue-50'}`}
+                                >Tik</button>
+                                <button
+                                    onClick={() => setPageOrientation('landscape')}
+                                    className={`px-3 py-1 text-[11px] font-medium rounded transition-colors ${pageOrientation === 'landscape' ? 'bg-blue-100 text-blue-700 font-bold' : 'text-slate-600 hover:bg-blue-50'}`}
+                                >Yotiq</button>
+                                <Sep />
+                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mr-1">Fon:</span>
+                                <label className="px-3 py-1 text-[11px] font-medium text-slate-600 rounded hover:bg-blue-50 transition-colors cursor-pointer flex items-center gap-1.5 relative overflow-hidden">
+                                    🎨 Rang
+                                    <input
+                                        type="color"
+                                        defaultValue="#ffffff"
+                                        onChange={(e) => setPageBg(e.target.value)}
+                                        className="absolute inset-0 opacity-0 cursor-pointer"
+                                    />
+                                </label>
+                                <button
+                                    onClick={() => setPageBg('#ffffff')}
+                                    className="px-3 py-1 text-[11px] font-medium text-slate-600 rounded hover:bg-blue-50 transition-colors"
+                                >Tozalash</button>
+                            </div>
+                        )}
                     </div>
 
                     {/* Ruler */}
@@ -186,7 +341,10 @@ export const ResultsTemplate: React.FC<ResultsTemplateProps> = ({ result, templa
                     {/* Page Container (Gray desk background) */}
                     <div className="bg-[#e8e8e8] p-8 md:p-12 flex justify-center min-h-[900px]">
                         {/* A4 Page */}
-                        <div className="bg-white w-full max-w-[700px] shadow-[0_2px_20px_rgba(0,0,0,0.12)] p-16 md:p-20 min-h-[1000px] flex flex-col font-serif text-slate-900 relative">
+                        <div
+                            className={`w-full shadow-[0_2px_20px_rgba(0,0,0,0.12)] min-h-[1000px] flex flex-col font-serif text-slate-900 relative ${pageOrientation === 'landscape' ? 'max-w-[900px]' : 'max-w-[700px]'}`}
+                            style={{ padding: pagePadding, backgroundColor: pageBg }}
+                        >
                             {/* Page margin lines (subtle) */}
                             <div className="absolute top-12 left-12 right-12 bottom-12 border border-blue-100/30 pointer-events-none rounded-sm" />
 
