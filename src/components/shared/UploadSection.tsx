@@ -120,11 +120,7 @@ const UploadSection: React.FC<UploadSectionProps> = ({ onAnalyze, onShowHistory,
             ].map((item, i) => (
               <button
                 key={i}
-                onClick={() => {
-                  setText(item.prompt);
-                  // Auto-submit: shablon tanlanganda darhol yaratish boshlaydi
-                  setTimeout(() => onAnalyze(item.prompt), 300);
-                }}
+                onClick={() => setText(item.prompt)}
                 className={`group flex flex-col items-center gap-3 p-6 bg-white rounded-3xl border-2 shadow-sm hover:shadow-xl hover:border-emerald-300 hover:-translate-y-1 transition-all duration-300 active:scale-95 ${text === item.prompt ? 'border-emerald-400 bg-emerald-50/50 shadow-emerald-100' : 'border-slate-100'
                   }`}
               >
