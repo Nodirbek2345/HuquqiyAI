@@ -105,7 +105,7 @@ const UploadSection: React.FC<UploadSectionProps> = ({ onAnalyze, onShowHistory,
       {isTemplate && (
         <div className="space-y-4">
           <p className="text-center text-[10px] font-black uppercase tracking-[0.25em] text-slate-400">
-            ⚡ Tayyor shablonlardan birini tanlang
+            ⚡ Tayyor shablonlardan birini tanlang yoki quyida o'zingiz yozing
           </p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
@@ -120,8 +120,13 @@ const UploadSection: React.FC<UploadSectionProps> = ({ onAnalyze, onShowHistory,
             ].map((item, i) => (
               <button
                 key={i}
-                onClick={() => setText(item.prompt)}
-                className="group flex flex-col items-center gap-3 p-6 bg-white rounded-3xl border-2 border-slate-100 shadow-sm hover:shadow-xl hover:border-emerald-300 hover:-translate-y-1 transition-all duration-300 active:scale-95"
+                onClick={() => {
+                  setText(item.prompt);
+                  // Auto-submit: shablon tanlanganda darhol yaratish boshlaydi
+                  setTimeout(() => onAnalyze(item.prompt), 300);
+                }}
+                className={`group flex flex-col items-center gap-3 p-6 bg-white rounded-3xl border-2 shadow-sm hover:shadow-xl hover:border-emerald-300 hover:-translate-y-1 transition-all duration-300 active:scale-95 ${text === item.prompt ? 'border-emerald-400 bg-emerald-50/50 shadow-emerald-100' : 'border-slate-100'
+                  }`}
               >
                 <span className="text-3xl group-hover:scale-125 transition-transform duration-300">{item.emoji}</span>
                 <span className="text-xs font-black text-slate-700 uppercase tracking-wide text-center leading-tight">{item.label}</span>
