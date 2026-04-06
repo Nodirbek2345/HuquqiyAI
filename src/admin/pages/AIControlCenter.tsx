@@ -30,6 +30,7 @@ export const AIControlCenter: React.FC = () => {
         geminiEnabled: true,
         groqEnabled: true,
         openaiEnabled: false,
+        localRulesEnabled: true,
         temperature: 0.1,
         maxTokens: '4,096 (Standart)'
     });
@@ -74,7 +75,7 @@ export const AIControlCenter: React.FC = () => {
         }
     };
 
-    const toggleProvider = async (provider: 'gemini' | 'openai' | 'groq') => {
+    const toggleProvider = async (provider: 'gemini' | 'openai' | 'groq' | 'localRules') => {
         const key = `${provider}Enabled` as keyof AppSettings;
         const newSettings = {
             ...settings,
@@ -201,14 +202,14 @@ export const AIControlCenter: React.FC = () => {
                         {/* Local Rules */}
                         <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-100">
                             <div className="flex items-center gap-4">
-                                <div className="w-3 h-3 rounded-full bg-emerald-500"></div>
+                                <div className={`w-3 h-3 rounded-full ${settings.localRulesEnabled !== false ? 'bg-emerald-500' : 'bg-slate-300'}`}></div>
                                 <div>
                                     <h4 className="font-bold text-slate-900">Mahalliy Qoidalar (Local Rules)</h4>
                                     <p className="text-xs text-slate-500 font-mono mt-0.5">Zaxira • Offline Rejim</p>
                                 </div>
                             </div>
-                            <button disabled className="opacity-50 cursor-not-allowed">
-                                <ToggleRight className="w-8 h-8 text-slate-400" />
+                            <button onClick={() => toggleProvider('localRules')} className="text-slate-400 hover:text-blue-600 transition-colors">
+                                {settings.localRulesEnabled !== false ? <ToggleRight className="w-8 h-8 text-blue-600" /> : <ToggleLeft className="w-8 h-8" />}
                             </button>
                         </div>
                     </div>

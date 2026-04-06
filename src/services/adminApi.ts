@@ -345,6 +345,7 @@ export interface AppSettings {
     geminiEnabled: boolean;
     openaiEnabled: boolean;
     groqEnabled: boolean;
+    localRulesEnabled?: boolean;
     temperature: number;
     maxTokens: string;
     twoFactorEnabled?: boolean;
@@ -371,6 +372,7 @@ export async function getSystemSettings(): Promise<AppSettings> {
             geminiEnabled: true,
             openaiEnabled: false,
             groqEnabled: true,
+            localRulesEnabled: true,
             temperature: 0.1,
             maxTokens: '4,096 (Standart)'
         };
@@ -392,6 +394,7 @@ export async function updateSystemSettings(settings: Partial<AppSettings>): Prom
             geminiEnabled: true,
             openaiEnabled: false,
             groqEnabled: true,
+            localRulesEnabled: true,
             temperature: 0.1,
             maxTokens: '4,096 (Standart)'
         };

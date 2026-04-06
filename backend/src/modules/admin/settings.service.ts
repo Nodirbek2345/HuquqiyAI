@@ -6,6 +6,7 @@ export interface AppSettings {
     geminiEnabled: boolean;
     groqEnabled: boolean;
     openaiEnabled: boolean;
+    localRulesEnabled?: boolean;
     temperature: number;
     maxTokens: string;
     // Security Settings

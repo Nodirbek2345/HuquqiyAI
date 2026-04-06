@@ -133,6 +133,10 @@ export class AiOrchestratorService {
         if (settings.geminiEnabled !== false) activeProviders.push('gemini');
         if (settings.openaiEnabled !== false) activeProviders.push('openai');
 
+        if (activeProviders.length === 0) {
+            throw new Error('BARCHA_PROVAYDERLAR_OCHIRILGAN');
+        }
+
         // Ularni aralashtirish (Load Balancing - bir u, bir bu ishlashi uchun)
         const shuffledProviders = activeProviders.sort(() => 0.5 - Math.random());
 

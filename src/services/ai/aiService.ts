@@ -59,7 +59,7 @@ export async function analyzeDocument(
         console.warn("[AdolatAI] ⚠️ Backend ishlamayapti. Muqobil variantlar ishga tushirildi.");
 
         // Admin sozlamalarini yuklash (agar imkon bo'lsa)
-        let providerSettings = { geminiEnabled: true, groqEnabled: true, openaiEnabled: false };
+        let providerSettings: any = { geminiEnabled: true, groqEnabled: true, openaiEnabled: false, localRulesEnabled: true };
         try {
             const { getSystemSettings } = await import('../adminApi');
             providerSettings = await getSystemSettings();
@@ -104,7 +104,15 @@ export async function analyzeDocument(
             console.log("[AdolatAI] ⏭️ Groq/OpenAI o'chirilgan (admin sozlamalari)");
         }
 
-        // 3. Local fallback (agar hammasi ishlamasa)
+        // 3. Local fallback (agar hammasi ishlamasa va localRules o'chirilmagan bo'lsa)
+        if (providerSettings.localRulesEnabled === false) {
+            throw new Error("Barcha AI xizmatlari va Mahalliy Qoidalar (Zaxira) admin tomonidan o'chirilgan! Sozlamalarni tekshiring.");
+        }
+
+        if (e.message?.includes('BARCHA_PROVAYDERLAR_OCHIRILGAN')) {
+            throw new Error("Barcha AI xizmatlari admin tomonidan o'chirilgan! Iltimos admin panelidan yoqing.");
+        }
+
         try {
             console.log("[AdolatAI] 🔄 Mahalliy qoidalar orqali tahlil qilinmoqda...");
             // Dynamic import — faqat kerak bo'lganda yuklanadi
