@@ -18,7 +18,7 @@ const config = {
     // ====================
     api: {
         // Asosiy backend ulanishi (agar env bo'lmasa, to'g'ri Render manzilidan oladi)
-        baseUrl: import.meta.env.VITE_API_URL || 'https://adolataibackend.onrender.com',
+        baseUrl: import.meta.env.VITE_API_URL || 'https://huquqiyai.onrender.com',
         timeout: 30000
     },
 
