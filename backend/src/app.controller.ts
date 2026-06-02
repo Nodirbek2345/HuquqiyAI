@@ -2,19 +2,25 @@ import { Controller, Get, Post, Body, Query } from '@nestjs/common';
 import { AppService } from './app.service';
 import { PrismaService } from './prisma/prisma.service';
 
-@Controller('api')
+@Controller()
 export class AppController {
   constructor(
     private readonly appService: AppService,
     private readonly prisma: PrismaService
   ) { }
 
-  @Get()
+  // UptimeRobot va boshqa botlar uchun root endpoint
+  @Get('/')
+  getHome() {
+    return { status: 'OK', message: 'HuquqiyAI Backend is running perfectly!' };
+  }
+
+  @Get('api')
   getHello(): string {
     return this.appService.getHello();
   }
 
-  @Post('register')
+  @Post('api/register')
   async registerUser(@Body() body: any) {
     if (!body || !body.fullName || !body.email || !body.phone) {
       return { success: false, message: 'Invalid data' };
@@ -31,7 +37,7 @@ export class AppController {
     return { success: true, user };
   }
 
-  @Get('users/check')
+  @Get('api/users/check')
   async checkUserStatus(@Query('email') email: string) {
     if (!email) return { success: false, message: 'Email arg missing' };
     const user = await this.prisma.platformUser.findUnique({
