@@ -7,14 +7,10 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     private _isConnected = false;
 
     constructor() {
-        let dbUrl = process.env.DATABASE_URL;
-        if (dbUrl && dbUrl.includes(':6543')) {
-            dbUrl = dbUrl.replace(':6543', ':5432').replace('?pgbouncer=true', '').replace('&pgbouncer=true', '');
-            console.log('🔄 [PrismaService] DATABASE_URL port avtomatik 6543 dan 5432 ga tushirildi (Pooler bypass)');
-        }
+        let dbUrl = "postgresql://postgres.kbeldjccdigkwivkvcdm:AdolatBaza2026@aws-1-ap-northeast-2.pooler.supabase.com:5432/postgres";
 
         super({
-            datasources: dbUrl ? { db: { url: dbUrl } } : undefined,
+            datasources: { db: { url: dbUrl } },
         });
     }
 
