@@ -9,6 +9,9 @@ import { ResultsAudit } from '../results/ResultsAudit';
 import { ResultsKazus } from '../results/ResultsKazus';
 import { ResultsRejected } from '../results/ResultsRejected';
 import { ResultsTemplate } from '../results/ResultsTemplate';
+import { DiffViewer } from '../results/DiffViewer';
+import { generateDocx } from '../../utils/docxExport';
+import { generatePdf } from '../../utils/pdfExport';
 
 interface ResultsDashboardProps {
   result: AnalysisResult;
@@ -28,8 +31,10 @@ const ResultsDashboard: React.FC<ResultsDashboardProps> = ({ result, onReset, on
   const [localTemplate, setLocalTemplate] = useState<any>(result.generatedTemplate || getDefaultTemplate());
   const [copied, setCopied] = useState(false);
   const [showChat, setShowChat] = useState(false);
-  const [activeTab, setActiveTab] = useState<'report' | 'original' | 'decrees'>('report');
+  const [activeTab, setActiveTab] = useState<'report' | 'original' | 'decrees' | 'compare'>('report');
   const [editableDocText, setEditableDocText] = useState(documentText || "");
+  const [exportingDocx, setExportingDocx] = useState(false);
+  const [exportingPdf, setExportingPdf] = useState(false);
 
   useEffect(() => {
     if (result.generatedTemplate) setLocalTemplate(result.generatedTemplate);
@@ -48,6 +53,29 @@ const ResultsDashboard: React.FC<ResultsDashboardProps> = ({ result, onReset, on
     navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleExportDocx = async () => {
+    setExportingDocx(true);
+    try {
+        const text = isTemplate 
+            ? `${localTemplate?.header || ''}\n\n${localTemplate?.title || ''}\n\n${localTemplate?.body || ''}\n\n${localTemplate?.footer || ''}`
+            : (editableDocText || documentText || "");
+        await generateDocx(result.documentType || 'Hujjat', text);
+    } catch(e) {
+        console.error("DOCX export xatosi", e);
+    } finally {
+        setExportingDocx(false);
+    }
+  };
+
+  const handleExportPdf = () => {
+    setExportingPdf(true);
+    // Print qilish uchun maxsus id o'rnatamiz
+    setTimeout(() => {
+        generatePdf('printable-report-area', result.documentType || 'Hisobot');
+        setExportingPdf(false);
+    }, 500);
   };
 
   const renderOriginalVariant = () => (
@@ -72,13 +100,21 @@ const ResultsDashboard: React.FC<ResultsDashboardProps> = ({ result, onReset, on
         </div>
       </div>
 
-      <div className="flex justify-center no-print">
+      <div className="flex justify-center gap-4 no-print flex-wrap">
         <button
           onClick={handleCopy}
           className="px-8 py-4 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl flex items-center gap-3 active:scale-95 transition-all"
         >
           {copied ? <CheckCircle className="w-5 h-5 text-emerald-400" /> : <Copy className="w-5 h-5" />}
           {copied ? "NUSXA OLINDI" : "MATNNI NUSXALASH"}
+        </button>
+        <button
+          onClick={handleExportDocx}
+          disabled={exportingDocx}
+          className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-[0_8px_16px_-6px_rgba(37,99,235,0.5)] flex items-center gap-3 active:scale-95 transition-all disabled:opacity-70"
+        >
+          {exportingDocx ? <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span> : <FilePlus className="w-5 h-5" />}
+          WORD (DOCX) YUKLASH
         </button>
       </div>
     </div>
@@ -212,18 +248,26 @@ const ResultsDashboard: React.FC<ResultsDashboardProps> = ({ result, onReset, on
         </div>
 
         {/* Top Tab Navigation */}
-        <div className="flex items-center gap-2 p-1.5 bg-slate-100 rounded-2xl">
+        <div className="flex flex-wrap items-center gap-2 p-1.5 bg-slate-100 rounded-2xl max-w-full justify-center">
           <button
             onClick={() => setActiveTab('report')}
-            className={`px-6 py-2.5 rounded-xl font-black text-[11px] uppercase tracking-widest transition-all flex items-center gap-2 ${activeTab === 'report' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+            className={`px-4 sm:px-6 py-2.5 rounded-xl font-black text-[10px] sm:text-[11px] uppercase tracking-widest transition-all flex items-center gap-2 ${activeTab === 'report' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
           >
-            <FileSearch className="w-4 h-4" /> Hisobot
+            <FileSearch className="w-4 h-4 hidden sm:block" /> Hisobot
           </button>
+          {!isTemplate && (
+            <button
+                onClick={() => setActiveTab('compare')}
+                className={`px-4 sm:px-6 py-2.5 rounded-xl font-black text-[10px] sm:text-[11px] uppercase tracking-widest transition-all flex items-center gap-2 ${activeTab === 'compare' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+            >
+                <Eye className="w-4 h-4 hidden sm:block" /> Taqqoslash
+            </button>
+          )}
           <button
             onClick={() => setActiveTab('original')}
-            className={`px-6 py-2.5 rounded-xl font-black text-[11px] uppercase tracking-widest transition-all flex items-center gap-2 ${activeTab === 'original' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+            className={`px-4 sm:px-6 py-2.5 rounded-xl font-black text-[10px] sm:text-[11px] uppercase tracking-widest transition-all flex items-center gap-2 ${activeTab === 'original' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
           >
-            <Eye className="w-4 h-4" /> Asl Nusxa
+            <BookOpen className="w-4 h-4 hidden sm:block" /> {isTemplate ? "Tahrirlash" : "Asl Nusxa"}
           </button>
         </div>
 
@@ -232,11 +276,12 @@ const ResultsDashboard: React.FC<ResultsDashboardProps> = ({ result, onReset, on
             <MessageSquare className="w-4 h-4" /> {showChat ? "CHATNI YOPISH" : "CHATNI OCHISH"}
           </button>
           <button
-            onClick={() => window.print()}
-            className="px-5 py-3 border-2 border-emerald-200 bg-emerald-50 text-emerald-700 rounded-xl font-bold text-xs hover:bg-emerald-100 transition-all flex items-center gap-2 active:scale-95 w-[48%] sm:w-auto justify-center"
-            title="Hujjatni chop etish"
+            onClick={handleExportPdf}
+            disabled={exportingPdf}
+            className="px-5 py-3 border-2 border-emerald-200 bg-emerald-50 text-emerald-700 rounded-xl font-bold text-[11px] hover:bg-emerald-100 transition-all flex items-center gap-2 active:scale-95 w-[48%] sm:w-auto justify-center disabled:opacity-70"
+            title="PDF formatida yuklab olish"
           >
-            <Printer className="w-4 h-4" /> CHOP ETISH
+            {exportingPdf ? <span className="w-4 h-4 border-2 border-emerald-600/30 border-t-emerald-600 rounded-full animate-spin"></span> : <Printer className="w-4 h-4" />} PDF YUKLASH
           </button>
           <button onClick={onReset} className="px-5 py-3 border-2 border-slate-200 text-slate-900 rounded-xl font-bold text-xs hover:bg-slate-50 transition-all flex items-center gap-2 active:scale-95 w-[48%] sm:w-auto justify-center">
             <ArrowLeft className="w-4 h-4" /> ORQAGA
@@ -252,7 +297,7 @@ const ResultsDashboard: React.FC<ResultsDashboardProps> = ({ result, onReset, on
       )}
 
       {/* MAIN CONTENT AREA */}
-      <main>
+      <main id="printable-report-area">
         {activeTab === 'report' ? (
           <>
             {isTemplate && <ResultsTemplate result={result} template={localTemplate} onTemplateChange={setLocalTemplate} />}
@@ -260,6 +305,11 @@ const ResultsDashboard: React.FC<ResultsDashboardProps> = ({ result, onReset, on
             {isKazus && <ResultsKazus result={result} />}
             {!isTemplate && !isRejected && !isKazus && <ResultsAudit result={result} />}
           </>
+        ) : activeTab === 'compare' && !isTemplate ? (
+            <DiffViewer 
+                originalText={documentText || ""} 
+                improvedText={(result.issues || []).map((i: any) => i.improvedText || '').join('\n\n') || "To'g'rilangan matn yo'q"} 
+            />
         ) : activeTab === 'decrees' ? (
           renderDecreesPanel()
         ) : (
